@@ -1,5 +1,8 @@
 # Самописный аудиоплеер на чистом JavaScript
 
+## Ссылка на Github Pages
+https://danilovov.github.io/JustPlayer/
+
 ## Фукции плеера
 
 Стандартные:
