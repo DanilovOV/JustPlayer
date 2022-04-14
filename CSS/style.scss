@@ -1,0 +1,288 @@
+// <ПЕРЕМЕННЫЕ>=====================================================================
+$fontfamily: "Arial";
+$minwidth:320px;
+$maxWidth:1920px;
+$maxWidthContainer:1100px;
+$md1:1112px;
+$md2:992.98px;
+$md3:767.98px;
+$md4:479.98px;
+// </ПЕРЕМЕННЫЕ>====================================================================
+
+// <ОБНУЛЕНИЕ>======================================================================
+*{padding: 0; margin: 0; border: 0;}
+*,*:before,*:after{-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}
+:focus,:active{outline:none;}
+a:focus,a:active{outline: none;}
+nav,footer,header,aside{display: block;}
+html,body{height: 100%; width: 100%; margin: 0; padding: 0; min-width: $minwidth; position: relative; color: #000;}
+body{font-size: 100%; line-height: 1; font-size: 14px; font-family: $fontfamily; -ms-text-size-adjust: 100%; -moz-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+    &.lock { overflow: hidden;
+        @media (max-width:$md3){
+            width: 100%;
+            position: fixed;
+            overflow: hidden;
+        }
+    }
+}
+input,button,textarea{font-family: $fontfamily;}
+input::-ms-clear{display: none;}
+button{cursor: pointer;}
+button::-moz-focus-inner{padding: 0; border: 0;}
+a, a:visited{text-decoration: none; color: #61892F; &:hover{color: #7fb43e}};
+a:hover{text-decoration:none}
+ul li{list-style: none;}
+img{vertical-align: top;}
+h1,h2,h3,h4,h5,h6{font-size: inherit; font-weight: inherit;}
+// </ОБНУЛЕНИЕ>=====================================================================
+
+// <ОБОЛОЧКА>=======================================================================
+.wrapper {
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    background-color: #222629;
+    color: #a3a3a3;
+    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+    z-index: 1;
+}
+.container {
+    max-width: $maxWidthContainer;
+    margin: 0 auto;
+}
+// </ОБОЛОЧКА>======================================================================
+
+// АУДИОПЛЕЕР=======================================================================
+#audioplayer__controls {
+    margin: 0 auto;
+    padding: 1px;
+}
+
+.ap_button {
+    width: 63px;
+    background: #192029;
+}
+
+// Замена перемещаемой песне
+.songShadow {
+    width: 498px;
+    height: 70px;
+    background: inherit;
+}
+
+.audioplayer {
+    margin: 100px auto 0;
+    position: static;
+
+    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+    background: #192029;
+    box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
+    width: 1000px;
+    height: 720px;
+    line-height: 1.5;
+    display: flex;
+    user-select: none;
+
+    // .audioplayer__left
+    &__left {
+        border-right: 1px solid #222629;
+    }
+    // .audioplayer__right
+    &__right {
+        overflow-y: auto;
+        overflow-x: hidden;
+        &::-webkit-scrollbar {
+            height: 5px;
+            width: 5px;
+        }
+        &::-webkit-scrollbar-track {
+            background: #222629;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #3a3b38;
+            border-radius: 5px;
+        }
+    }
+    // .audioplayer__preview
+    &__preview {
+        width: 500px;
+        margin: 0 auto;
+        img {
+            width: 500px;
+            height: 500px;
+        }
+    }
+    // .audioplayer__trackblock
+    &__trackblock {
+        margin: 10px 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    // .audioplayer__currentTime
+    &__currentTime {
+        position: relative;
+        top: 1px;
+        color: #607D8B;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    // .audioplayer__audio-track
+    &__audio-track {
+        cursor: pointer;
+        width: 400px;
+        height: 6px;
+        background-color: #607D8B;
+    }
+    // .audioplayer__time
+    &__time {
+        width: 0;
+        height: 6px;
+        background-color: #ffffff
+    }
+    // .audioplayer__duration
+    &__duration {
+        position: relative;
+        top: 1px;
+        color: #607D8B;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    // .audioplayer__buttons
+    &__buttons {
+        display: flex;
+        justify-content: space-around;
+    }
+    // .audioplayer__repeat
+    &__repeat {
+        width: 150px;
+    }
+	// .audioplayer__volumeContainer
+    &__volumeContainer {
+        display: flex;
+        align-items: center;
+        width: 150px;
+    }
+    // .audioplayer__volumeIcon
+    &__volumeIcon {
+        width: 43px;
+    }
+    // .audioplayer__volumeBar
+    &__volumeBar {
+        cursor: pointer;
+        width: 100px;
+        height: 6px;
+        background-color: #607D8B;
+    }
+    // .audioplayer__currentVolume
+    &__currentVolume {
+        width: 50px;
+        height: 6px;
+        background-color: #ffffff;
+    }
+    // .audioplayer__mainControls
+    &__mainControls {
+        height: 70px;
+        display: flex;
+        justify-content: center;
+    }
+    // .audioplayer__prev
+    &__prev {
+        width: 58px;
+    }
+    // .audioplayer__next
+    &__next {
+        width: 58px;
+    }
+    // .audioplayer__songData
+    &__songData {
+        margin: 15px 0 0 0;
+        text-align: center;
+        color: #607D8B;
+        font-size: 14px;
+        font-family: 'Open Sans', sans-serif;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+	// .audioplayer__name
+	&__name {
+        text-align: center;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: normal;
+        text-transform: none;
+	}
+    // .audioplayer__musicList
+    &__musicList {
+        display: flex;
+        flex-direction: column;
+    }
+    // .audioplayer__musicItem
+    &__musicItem {
+        display: flex;
+        align-items: center;
+        padding: 10px 0 10px 10px;
+        cursor: pointer;
+
+    }
+    // .audioplayer__playingStatusIcon
+    &__playingStatusIcon {
+        position: relative;
+        right: 6px;
+        width: 20px;
+        height: 20px;
+    }
+    // .audioplayer__itemMetaData
+    &__itemMetaData {
+        position: relative;
+        top: -1px;
+        width: 353px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    // .audioplayer__itemSongName
+    &__itemSongName {
+        display: block;
+        font-weight: 300;
+        font-size: 16px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #FFF;
+    }
+    // .audioplayer__itemAuthorAlbum
+    &__itemAuthorAlbum {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #607D8B;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    // .audioplayer__smallCover
+    &__smallCover {
+        margin-left: 11px;
+        width: 50px;
+        height: 50px;
+    }
+    // .audioplayer__itemDuration
+    &__itemDuration {
+        width: 55px;
+        text-align: center;
+        height: 50px;
+        line-height: 50px;
+        color: #607D8B;
+        font-size: 16px;
+        font-weight: 500;
+    }
+}
+
+.movable {
+    position: absolute;
+    z-index: 9999;
+    pointer-events:none;
+    transition: none;
+}
+// !АУДИОПЛЕЕР======================================================================

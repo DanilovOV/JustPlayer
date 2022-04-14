@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="CSS/style.css">
+        <meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width">
+        <link rel="shortcut icon" href="Images/Site/shortIcon.png" type="image/x-icon">
+    </head>
+    <body>
+        <div class="wrapper">
+
+            <div class="audioplayer">
+                <div class="audioplayer__left">
+                    <audio id="audioplayer" src=""></audio>
+                    <div class="audioplayer__preview">
+                        <img id="audioplayer__preview" src="" alt="Ошибка" draggable="false">
+                    </div>
+                    <div id="audioplayer__controls">
+                        <div class="audioplayer__trackblock">
+                            <div class="audioplayer__currentTime"></div>
+                            <div class="audioplayer__audio-track"><div class="audioplayer__time"></div></div>
+                            <div class="audioplayer__duration"></div>
+                        </div>
+                        <div class="audioplayer__buttons">
+                            <button class="audioplayer__repeat ap_button"><img src="Images/Icons/repeat-off.svg" alt="" draggable="false"></button>
+                            <div class="audioplayer__mainControls">
+                                <button class="audioplayer__prev ap_button"><img src="Images/Icons/prev.svg" alt="" draggable="false"></button>
+                                <button class="audioplayer__play ap_button"><img id="play_pause" src="Images/Icons/play.svg" alt="" draggable="false"></button>
+                                <button class="audioplayer__next ap_button"><img src="Images/Icons/next.svg" alt="" draggable="false"></button>
+                            </div>
+                            <div class="audioplayer__volumeContainer">
+                                <button class="audioplayer__volumeIcon ap_button"><img src="Images/Icons/volume.svg" alt="" draggable="false"></button>
+                                <div class="audioplayer__volumeBar"><div class="audioplayer__currentVolume"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="audioplayer__songData">
+                        <div class="audioplayer__name"></div>
+                        <div class="audioplayer__author"></div>
+                        <div class="audioplayer__album"></div>
+                    </div>
+                </div>
+                    
+                <div class="audioplayer__right">
+                    <div class="audioplayer__musicList"></div>
+                </div>
+            </div>
+
+        </div>
+        <script src="JS/script.js"></script>
+    </body>
+</html>

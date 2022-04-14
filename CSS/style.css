@@ -1,0 +1,384 @@
+* {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+:focus, :active {
+  outline: none;
+}
+
+a:focus, a:active {
+  outline: none;
+}
+
+nav, footer, header, aside {
+  display: block;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  position: relative;
+  color: #000;
+}
+
+body {
+  font-size: 100%;
+  line-height: 1;
+  font-size: 14px;
+  font-family: "Arial";
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.lock {
+  overflow: hidden;
+}
+
+@media (max-width: 767.98px) {
+  body.lock {
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
+  }
+}
+
+input, button, textarea {
+  font-family: "Arial";
+}
+
+input::-ms-clear {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+  color: #61892F;
+}
+
+a:hover, a:visited:hover {
+  color: #7fb43e;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+ul li {
+  list-style: none;
+}
+
+img {
+  vertical-align: top;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.wrapper {
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background-color: #222629;
+  color: #a3a3a3;
+  font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+#audioplayer__controls {
+  margin: 0 auto;
+  padding: 1px;
+}
+
+.ap_button {
+  width: 63px;
+  background: #192029;
+}
+
+.songShadow {
+  width: 498px;
+  height: 70px;
+  background: inherit;
+}
+
+.audioplayer {
+  margin: 100px auto 0;
+  position: static;
+  font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+  background: #192029;
+  -webkit-box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
+  width: 1000px;
+  height: 720px;
+  line-height: 1.5;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.audioplayer__left {
+  border-right: 1px solid #222629;
+}
+
+.audioplayer__right {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.audioplayer__right::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+
+.audioplayer__right::-webkit-scrollbar-track {
+  background: #222629;
+}
+
+.audioplayer__right::-webkit-scrollbar-thumb {
+  background-color: #3a3b38;
+  border-radius: 5px;
+}
+
+.audioplayer__preview {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.audioplayer__preview img {
+  width: 500px;
+  height: 500px;
+}
+
+.audioplayer__trackblock {
+  margin: 10px 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.audioplayer__currentTime {
+  position: relative;
+  top: 1px;
+  color: #607D8B;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.audioplayer__audio-track {
+  cursor: pointer;
+  width: 400px;
+  height: 6px;
+  background-color: #607D8B;
+}
+
+.audioplayer__time {
+  width: 0;
+  height: 6px;
+  background-color: #ffffff;
+}
+
+.audioplayer__duration {
+  position: relative;
+  top: 1px;
+  color: #607D8B;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.audioplayer__buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.audioplayer__repeat {
+  width: 150px;
+}
+
+.audioplayer__volumeContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 150px;
+}
+
+.audioplayer__volumeIcon {
+  width: 43px;
+}
+
+.audioplayer__volumeBar {
+  cursor: pointer;
+  width: 100px;
+  height: 6px;
+  background-color: #607D8B;
+}
+
+.audioplayer__currentVolume {
+  width: 50px;
+  height: 6px;
+  background-color: #ffffff;
+}
+
+.audioplayer__mainControls {
+  height: 70px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.audioplayer__prev {
+  width: 58px;
+}
+
+.audioplayer__next {
+  width: 58px;
+}
+
+.audioplayer__songData {
+  margin: 15px 0 0 0;
+  text-align: center;
+  color: #607D8B;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.audioplayer__name {
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.audioplayer__musicList {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.audioplayer__musicItem {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 10px 0 10px 10px;
+  cursor: pointer;
+}
+
+.audioplayer__playingStatusIcon {
+  position: relative;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+}
+
+.audioplayer__itemMetaData {
+  position: relative;
+  top: -1px;
+  width: 353px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.audioplayer__itemSongName {
+  display: block;
+  font-weight: 300;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #FFF;
+}
+
+.audioplayer__itemAuthorAlbum {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #607D8B;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.audioplayer__smallCover {
+  margin-left: 11px;
+  width: 50px;
+  height: 50px;
+}
+
+.audioplayer__itemDuration {
+  width: 55px;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+  color: #607D8B;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.movable {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+  -webkit-transition: none;
+  transition: none;
+}
