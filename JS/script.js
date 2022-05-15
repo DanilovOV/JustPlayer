@@ -371,7 +371,7 @@ function UpdateTimeAndBar() {
         apCurrentProgress.style.width = (audioTime * 100) / audioLength + '%';
 
         // Если время песни закончилось, за ислючением перемотки во время паузы
-        if (audioTime == audioLength && apIsSongPlaying == true) {
+        if (audioTime == audioLength && apIsSongPlaying) {
             if (apIsSongMoving == false) {
                 if (apIsRepeat == false) {
                     apMusicList.childNodes[apCurrentSongPos].classList.remove('audioplayer__activeSong');
@@ -460,7 +460,7 @@ function StopChangeTime() {
 
 // Ставим/убираем режим повтора для песни
 function RepeatHandler(isRepeat) {
-    if (apIsRepeat == true || isRepeat == 'no') {
+    if (apIsRepeat || isRepeat == 'no') {
         apRepeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
         apIsRepeat = false;
     }
@@ -589,7 +589,7 @@ function EndMoveSong(e) {
     document.removeEventListener('mousemove', MoveSong);
     document.removeEventListener('mouseup', EndMoveSong);
 
-    if (apIsSongMoving == true) {
+    if (apIsSongMoving) {
         apIsSongMoving = false;
         apSongShadow.replaceWith(movingSongData.songBlock);
 
@@ -605,7 +605,7 @@ function EndMoveSong(e) {
     }
 
     // Если песня закончилась пока мы переносили какую-либо песню
-    if (apWaitMovingEnd == true) {
+    if (apWaitMovingEnd) {
         apWaitMovingEnd = false;
         UpdateTimeAndBar();
     }
