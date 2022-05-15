@@ -7,12 +7,12 @@ let apPositionMode = 0; // Статическое позиционировани
 let apProgressBar = document.querySelector('.audioplayer__audio-track'); // Общий прогрессбар песни
 let apCurrentProgress = document.querySelector(".audioplayer__time"); // Полоска текущего прогресса песни
 let apProgressTime; // Определяет состояние прогрессбара песни
-let apIsChangingTime = new Boolean(false); // Указывает, перематывается ли трек на данный момент
+let apIsChangingTime = false; // Указывает, перематывается ли трек на данный момент
 let apPlayButton = document.querySelector('.audioplayer__play'); // Кнопка Play/Pause
 let apPrevButton = document.querySelector('.audioplayer__prev'); // Кнопка следующей песни
 let apNextButton = document.querySelector('.audioplayer__next'); // Кнопка предыдущей песни
 let apImgPlayPause = document.getElementById('play_pause'); // Для управления изображением кнопки Play/Pause
-let apIsSongPlaying = new Boolean(false); // Указывает, проигрывается ли в данный момент песня
+let apIsSongPlaying = false; // Указывает, проигрывается ли в данный момент песня
 let apImagePreview = document.getElementById('audioplayer__preview'); // Большое изображение песни в плеере
 let apDuration = document.querySelector('.audioplayer__duration');  // Данные о продолжительности песни в плеере
 let apCurrentTime = document.querySelector('.audioplayer__currentTime'); // Данные о текущем времени проигрывания песни в плеере
@@ -20,18 +20,18 @@ let apName = document.querySelector('.audioplayer__name'); // Данные о н
 let apAuthor = document.querySelector('.audioplayer__author'); // Данные об авторе песни в плеере
 let apAlbum = document.querySelector('.audioplayer__album'); // Данные об альбоме песни в плеере
 let apRepeatButton = document.querySelector('.audioplayer__repeat'); // Кнопка включения/выключения повтора песни
-let apIsRepeat = new Boolean(false); // Определяет, включен ли повтор песни
+let apIsRepeat = false; // Определяет, включен ли повтор песни
 let apVolumeButton = document.querySelector('.audioplayer__volumeIcon'); // Кнопка выключения/включения звука
 let apVolumeBar = document.querySelector('.audioplayer__volumeBar'); // Общий бар громкости
 let apCurrentVolume = document.querySelector('.audioplayer__currentVolume'); // Бар текущей громкости
 let apCurrentVolumeData = 0.5; // Значение громкости. Нужно чтобы восстановить уровень звука, бывший до его выключения
-let apIsMuted = new Boolean(false); // Определяет, выключен ли звук или нет
+let apIsMuted = false; // Определяет, выключен ли звук или нет
 let apSongShadow = 0; // Замена блока пока он перемещается
-let apIsSongMoving = new Boolean(false); // Указывает, перемещается ли песня или нет
+let apIsSongMoving = false; // Указывает, перемещается ли песня или нет
 let apSongSequence = []; // Для хранения данных о текущей очередности песен
 let apSongID = 0; // Номер текущей песни в songsMetaData
 let apCurrentSongPos = 0; // Определяет какой по счету трек должен играть
-let apWaitMovingEnd = new Boolean(false); // Указывает на то, что какой-либо трек в данный момент перемещается
+let apWaitMovingEnd = false; // Указывает на то, что какой-либо трек в данный момент перемещается
 
 apPlayButton.addEventListener("click", PlayPauseHandler); // Кнопочка Play/Pause
 apPrevButton.addEventListener("click", () => ButtonPrevNextHandler('prev')); // Кнопочка предыдущей песни
@@ -272,7 +272,7 @@ function CheckPartOfSongBlock(e) {
 
 // Определяет позиционирование аудиоплеера
 function SetPositionMode() {
-    let position = new String(); // Без явного указания типа некорректно сравнивает переменную со строками
+    let position;
     position = window.getComputedStyle(audioplayerBlock).position;
     if (position == 'absolute' || position == 'relative' || position == 'fixed') apPositionMode = 1;
 }
@@ -365,15 +365,15 @@ function UpdateTimeAndBar() {
     apCurrentTime.innerHTML = ConvertTime(audioplayer.currentTime);
 
     // Если в это время не перематываем песню
-    if (apIsChangingTime == false) {
+    if (!apIsChangingTime) {
         let audioTime = Math.round(audioplayer.currentTime);
         let audioLength = Math.round(audioplayer.duration);
         apCurrentProgress.style.width = (audioTime * 100) / audioLength + '%';
 
         // Если время песни закончилось, за ислючением перемотки во время паузы
         if (audioTime == audioLength && apIsSongPlaying) {
-            if (apIsSongMoving == false) {
-                if (apIsRepeat == false) {
+            if (!apIsSongMoving) {
+                if (!apIsRepeat) {
                     apMusicList.childNodes[apCurrentSongPos].classList.remove('audioplayer__activeSong');
                     apMusicList.childNodes[apCurrentSongPos].querySelector('img').src = 'Images/Icons/1x1.png';
                     
@@ -399,7 +399,7 @@ function ConvertTime(playingTime) {
 // Определяет, ставить ли песню на паузу или наоборот включить
 // Вызов с параметром 'play' всегда включает песню
 function PlayPauseHandler(playPauseParam) {
-    if (apIsSongPlaying == false || playPauseParam == 'play') {
+    if (!apIsSongPlaying || playPauseParam == 'play') {
         apIsSongPlaying = true;
         apSongs[apCurrentSongPos].classList.add('audioplayer__activeSong');
         apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/now-playing.png';
@@ -415,7 +415,7 @@ function PlayPauseHandler(playPauseParam) {
 
 // Переключает песню на предыдущую
 function ButtonPrevNextHandler(prevOrNext) {
-    if (apIsSongMoving == false) {
+    if (!apIsSongMoving) {
         apSongs[apCurrentSongPos].classList.remove('audioplayer__activeSong');
         apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/1x1.png';
 
@@ -430,7 +430,7 @@ function ButtonPrevNextHandler(prevOrNext) {
 
         RepeatHandler('no');
         SwitchSong();
-        if (apIsSongPlaying == true) audioplayer.play();
+        if (apIsSongPlaying) audioplayer.play();
     }
 }
 
@@ -472,7 +472,7 @@ function RepeatHandler(isRepeat) {
 
 // Включаем/выключаем звук
 function ButtonVolumeClick() {
-    if (apIsMuted == false) {
+    if (!apIsMuted) {
         audioplayer.volume = 0;
         apCurrentVolume.style.width = 0;
         this.querySelector('img').src = 'Images/Icons/mute.svg';
@@ -524,7 +524,7 @@ function StopChangeVolume() {
     apCurrentVolumeData = audioplayer.volume;
 }
 
-// Скрипт перемещения песен по плейлисту ==========================================
+// Скрипт перемещения песен по плейлисту
 function SongClickHandler(e) {
     if (e.which != 1) return; // Если не ПКМ, то обрабатываем
 
@@ -541,7 +541,7 @@ function SongClickHandler(e) {
 }
 
 function MoveSong(e) {
-    if (apIsSongMoving == false) { // Если еще не двигали песню
+    if (!apIsSongMoving) { // Если еще не двигали песню
 
         // Не передвигаем, если мышь передвинулась в нажатом состоянии недостаточно далеко
         if (Math.abs(e.pageX - movingSongData.downX) < 3 && Math.abs(e.pageY - movingSongData.downY) < 3) return;
