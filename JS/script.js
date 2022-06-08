@@ -3,7 +3,6 @@ let audioplayer = document.getElementById('audioplayer'); // Системный 
 let audioplayerBlock = document.querySelector('.audioplayer') // Блок аудиоплеера
 let apMusicList = document.querySelector('.audioplayer__musicList'); // Плейлист
 let apSongs = document.getElementsByClassName('audioplayer__musicItem'); // Массив блоков с песнями
-let apPositionMode = 0; // Статическое позиционирование плеера - 0, нестатическое - 1. Нужно для корректного рассчета позиции всех перемещаемых элементов (блоки песен, полоски времени и звука)
 let apProgressBar = document.querySelector('.audioplayer__audio-track'); // Общий прогрессбар песни
 let apCurrentProgress = document.querySelector(".audioplayer__time"); // Полоска текущего прогресса песни
 let apProgressTime; // Определяет состояние прогрессбара песни
@@ -32,6 +31,9 @@ let apSongSequence = []; // Для хранения данных о текуще
 let apSongID = 0; // Номер текущей песни в songsMetaData
 let apCurrentSongPos = 0; // Определяет какой по счету трек должен играть
 let apWaitMovingEnd = false; // Указывает на то, что какой-либо трек в данный момент перемещается
+
+// Нужно для корректного рассчета позиции всех перемещаемых элементов (блоки песен, полоски времени и звука)
+let apPositionMode = 0; 
 
 apPlayButton.addEventListener("click", PlayPauseHandler); // Кнопочка Play/Pause
 apPrevButton.addEventListener("click", () => ButtonPrevNextHandler('prev')); // Кнопочка предыдущей песни
@@ -225,7 +227,19 @@ function BuildNewPlaylist() {
 // Создает HTML разметку музыки
 function MusicCreateHTML() {
     for (let i = 0; i < songsMetaData.length; i++) {
-        document.querySelector('.audioplayer__musicList').insertAdjacentHTML('beforeend', '<div class="audioplayer__musicItem" data-song-index = "'+ apSongSequence[i] +'"> <div class="audioplayer__playingStatusIcon"><img src="Images/Icons/1x1.png" alt="" width="100%"></div> <div class="audioplayer__itemMetaData"><span class="audioplayer__itemSongName">' + songsMetaData[apSongSequence[i]].name + '</span> <span class="audioplayer__itemAuthorAlbum">' + songsMetaData[apSongSequence[i]].author + ' - ' + songsMetaData[apSongSequence[i]].album + '</span></div><img src="' + songsMetaData[apSongSequence[i]].cover_small + '" alt="Oh no(" class="audioplayer__smallCover"><div class="audioplayer__itemDuration">' + songsMetaData[apSongSequence[i]].duration + '</div></div>')
+        document.querySelector('.audioplayer__musicList').insertAdjacentHTML('beforeend', 
+            `<div class="audioplayer__musicItem" data-song-index="${apSongSequence[i]}"> \
+                <div class="audioplayer__playingStatusIcon"> \
+                    <img src="Images/Icons/1x1.png" alt="" width="100%"> \
+                </div> \
+                <div class="audioplayer__itemMetaData"> \
+                    <span class="audioplayer__itemSongName">${songsMetaData[apSongSequence[i]].name}</span> \
+                    <span class="audioplayer__itemAuthorAlbum">${songsMetaData[apSongSequence[i]].author} - ${songsMetaData[apSongSequence[i]].album}</span> \
+                </div> \
+                <img src="${songsMetaData[apSongSequence[i]].cover_small}" alt="" class="audioplayer__smallCover"> \
+                <div class="audioplayer__itemDuration">${songsMetaData[apSongSequence[i]].duration}</div> \
+            </div>`
+        )
     }
 }
 
