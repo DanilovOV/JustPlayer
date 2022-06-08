@@ -16,15 +16,7 @@ $md4:479.98px;
 a:focus,a:active{outline: none;}
 nav,footer,header,aside{display: block;}
 html,body{height: 100%; width: 100%; margin: 0; padding: 0; min-width: $minwidth; position: relative; color: #000;}
-body{font-size: 100%; line-height: 1; font-size: 14px; font-family: $fontfamily; -ms-text-size-adjust: 100%; -moz-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
-    &.lock { overflow: hidden;
-        @media (max-width:$md3){
-            width: 100%;
-            position: fixed;
-            overflow: hidden;
-        }
-    }
-}
+body{font-size: 100%; line-height: 1; font-size: 14px; font-family: $fontfamily; -ms-text-size-adjust: 100%; -moz-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;}
 input,button,textarea{font-family: $fontfamily;}
 input::-ms-clear{display: none;}
 button{cursor: pointer;}
@@ -63,7 +55,7 @@ h1,h2,h3,h4,h5,h6{font-size: inherit; font-weight: inherit;}
     background: #192029;
 }
 
-// Замена перемещаемой песне
+// Замена перемещаемой песни
 .songShadow {
     width: 498px;
     height: 70px;
