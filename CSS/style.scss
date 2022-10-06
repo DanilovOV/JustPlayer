@@ -1,48 +1,37 @@
-// <ПЕРЕМЕННЫЕ>=====================================================================
-$fontfamily: "Arial";
-$minwidth:320px;
-$maxWidth:1920px;
-$maxWidthContainer:1100px;
-$md1:1112px;
-$md2:992.98px;
-$md3:767.98px;
-$md4:479.98px;
-// </ПЕРЕМЕННЫЕ>====================================================================
-
-// <ОБНУЛЕНИЕ>======================================================================
-*{padding: 0; margin: 0; border: 0;}
-*,*:before,*:after{-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}
+*{margin:0;padding:0;}
+button{cursor:pointer;}
+a,a:visited{text-decoration:none;color:inherit;}
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;}
+button,select,input,textarea{border:none;color:inherit;font-size:inherit;}
+input::placeholder,textarea::placeholder{color:inherit;}
+*,::before,::after{box-sizing:border-box;}
 :focus,:active{outline:none;}
-a:focus,a:active{outline: none;}
-nav,footer,header,aside{display: block;}
-html,body{height: 100%; width: 100%; margin: 0; padding: 0; min-width: $minwidth; position: relative; color: #000;}
-body{font-size: 100%; line-height: 1; font-size: 14px; font-family: $fontfamily; -ms-text-size-adjust: 100%; -moz-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;}
-input,button,textarea{font-family: $fontfamily;}
-input::-ms-clear{display: none;}
-button{cursor: pointer;}
-button::-moz-focus-inner{padding: 0; border: 0;}
-a, a:visited{text-decoration: none; color: #61892F; &:hover{color: #7fb43e}};
-a:hover{text-decoration:none}
-ul li{list-style: none;}
-img{vertical-align: top;}
-h1,h2,h3,h4,h5,h6{font-size: inherit; font-weight: inherit;}
-// </ОБНУЛЕНИЕ>=====================================================================
+textarea{resize:none;}
+li{list-style:none;}
 
-// <ОБОЛОЧКА>=======================================================================
+html, body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    min-width: 320px;
+    font: 36px/1.15 "Helvetica Neue", sans-serif;
+    background-color: #222629;
+    color: #e3e3e3;
+}
+
 .wrapper {
     width: 100%;
     min-height: 100%;
     overflow: hidden;
-    background-color: #222629;
-    color: #a3a3a3;
-    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
-    z-index: 1;
 }
+
 .container {
-    max-width: $maxWidthContainer;
-    margin: 0 auto;
+    max-width: 1100px;
+    margin: 0px auto;
 }
-// </ОБОЛОЧКА>======================================================================
 
 // АУДИОПЛЕЕР=======================================================================
 #audioplayer__controls {
