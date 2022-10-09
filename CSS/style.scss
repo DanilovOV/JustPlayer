@@ -1,11 +1,11 @@
-*{margin:0;padding:0;}
 button{cursor:pointer;}
-a,a:visited{text-decoration:none;color:inherit;}
+:focus,:active{outline:none;}
+*{margin:0;padding:0;box-sizing:border-box;}
 h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;}
 button,select,input,textarea{border:none;color:inherit;font-size:inherit;}
-input::placeholder,textarea::placeholder{color:inherit;}
-*,::before,::after{box-sizing:border-box;}
-:focus,:active{outline:none;}
+a,a:visited{text-decoration:none;color:inherit;}
+::before,::after{box-sizing:border-box;}
+::placeholder{color:inherit;}
 textarea{resize:none;}
 li{list-style:none;}
 
@@ -17,7 +17,7 @@ html, body {
 
 body {
     min-width: 320px;
-    font: 36px/1.15 "Helvetica Neue", sans-serif;
+    font: 14px/1.15 "Helvetica Neue", sans-serif;
     background-color: #222629;
     color: #e3e3e3;
 }
@@ -32,6 +32,8 @@ body {
     max-width: 1100px;
     margin: 0px auto;
 }
+
+
 
 // АУДИОПЛЕЕР=======================================================================
 #audioplayer__controls {
@@ -52,26 +54,25 @@ body {
 }
 
 .audioplayer {
-    margin: 100px auto 0;
     position: static;
-
-    font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
-    background: #192029;
-    box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
     width: 1000px;
     height: 720px;
-    line-height: 1.5;
-    display: flex;
+    margin: 100px auto 0;
+    font: 14px/1.5 "Helvetica Neue", sans-serif;
+    background: #192029;
+    box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
     user-select: none;
 
     // .audioplayer__left
     &__left {
         border-right: 1px solid #222629;
     }
+
     // .audioplayer__right
     &__right {
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow: hidden auto;
+
         &::-webkit-scrollbar {
             height: 5px;
             width: 5px;
@@ -84,179 +85,181 @@ body {
             border-radius: 5px;
         }
     }
+
     // .audioplayer__preview
     &__preview {
         width: 500px;
         margin: 0 auto;
+
         img {
             width: 500px;
             height: 500px;
         }
     }
+
     // .audioplayer__trackblock
     &__trackblock {
-        margin: 10px 0;
         display: flex;
-        justify-content: space-around;
         align-items: center;
+        gap: 10px;
+        padding: 10px;
     }
+
     // .audioplayer__currentTime
     &__currentTime {
-        position: relative;
-        top: 1px;
         color: #607D8B;
-        font-size: 14px;
         font-weight: 700;
     }
+
     // .audioplayer__audio-track
     &__audio-track {
-        cursor: pointer;
-        width: 400px;
+        flex: 1;
         height: 6px;
         background-color: #607D8B;
+        cursor: pointer;
     }
+
     // .audioplayer__time
     &__time {
-        width: 0;
         height: 6px;
         background-color: #ffffff
     }
+
     // .audioplayer__duration
     &__duration {
-        position: relative;
-        top: 1px;
         color: #607D8B;
-        font-size: 14px;
         font-weight: 700;
     }
+
     // .audioplayer__buttons
     &__buttons {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
     }
+
     // .audioplayer__repeat
     &__repeat {
         width: 150px;
     }
+
 	// .audioplayer__volumeContainer
     &__volumeContainer {
         display: flex;
         align-items: center;
         width: 150px;
     }
+
     // .audioplayer__volumeIcon
     &__volumeIcon {
         width: 43px;
     }
+    
     // .audioplayer__volumeBar
     &__volumeBar {
-        cursor: pointer;
         width: 100px;
         height: 6px;
         background-color: #607D8B;
+        cursor: pointer;
     }
+
     // .audioplayer__currentVolume
     &__currentVolume {
         width: 50px;
         height: 6px;
         background-color: #ffffff;
     }
+
     // .audioplayer__mainControls
     &__mainControls {
-        height: 70px;
         display: flex;
         justify-content: center;
+        height: 70px;
     }
-    // .audioplayer__prev
-    &__prev {
+
+    // .audioplayer__prev , .audioplayer__next
+    &__prev, &__next {
         width: 58px;
     }
-    // .audioplayer__next
-    &__next {
-        width: 58px;
-    }
+
     // .audioplayer__songData
     &__songData {
         margin: 15px 0 0 0;
-        text-align: center;
         color: #607D8B;
-        font-size: 14px;
-        font-family: 'Open Sans', sans-serif;
+        text-align: center;
         text-transform: uppercase;
         font-weight: 700;
     }
+
 	// .audioplayer__name
 	&__name {
-        text-align: center;
         color: #FFFFFF;
         font-size: 20px;
-        font-weight: normal;
+        font-weight: 400;
         text-transform: none;
+        text-align: center;
 	}
-    // .audioplayer__musicList
-    &__musicList {
-        display: flex;
-        flex-direction: column;
-    }
+
     // .audioplayer__musicItem
     &__musicItem {
         display: flex;
         align-items: center;
         padding: 10px 0 10px 10px;
         cursor: pointer;
-
     }
+
     // .audioplayer__playingStatusIcon
     &__playingStatusIcon {
-        position: relative;
-        right: 6px;
-        width: 20px;
-        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 10px;
+
+        img {
+            width: 20px;
+            height: 20px;
+        }
     }
+
     // .audioplayer__itemMetaData
     &__itemMetaData {
-        position: relative;
-        top: -1px;
-        width: 353px;
+        flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        max-width: 337px;
     }
+
     // .audioplayer__itemSongName
     &__itemSongName {
-        display: block;
         font-weight: 300;
         font-size: 16px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         color: #FFF;
     }
+
     // .audioplayer__itemAuthorAlbum
     &__itemAuthorAlbum {
+        color: #607D8B;
+        text-transform: uppercase;
+        font-weight: 700;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: #607D8B;
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 14px;
     }
+
     // .audioplayer__smallCover
     &__smallCover {
         margin-left: 11px;
         width: 50px;
         height: 50px;
     }
+
     // .audioplayer__itemDuration
     &__itemDuration {
         width: 55px;
-        text-align: center;
-        height: 50px;
-        line-height: 50px;
         color: #607D8B;
         font-size: 16px;
         font-weight: 500;
+        text-align: center;
     }
 }
 
