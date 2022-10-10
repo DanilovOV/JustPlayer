@@ -21,6 +21,7 @@ button, select, input, textarea {
   border: none;
   color: inherit;
   font-size: inherit;
+  background: inherit;
 }
 
 a, a:visited {
@@ -81,11 +82,6 @@ body {
   padding: 1px;
 }
 
-.ap_button {
-  width: 63px;
-  background: #192029;
-}
-
 .songShadow {
   width: 498px;
   height: 70px;
@@ -123,11 +119,7 @@ body {
   background-color: #3a3b38;
   border-radius: 5px;
 }
-.audioplayer__preview {
-  width: 500px;
-  margin: 0 auto;
-}
-.audioplayer__preview img {
+.audioplayer__songImage img {
   width: 500px;
   height: 500px;
 }
@@ -136,24 +128,18 @@ body {
   align-items: center;
   gap: 10px;
   padding: 10px;
-}
-.audioplayer__currentTime {
   color: #607D8B;
   font-weight: 700;
 }
-.audioplayer__audio-track {
+.audioplayer__progressBar {
   flex: 1;
   height: 6px;
   background-color: #607D8B;
   cursor: pointer;
 }
-.audioplayer__time {
+.audioplayer__songProgress {
   height: 6px;
   background-color: #ffffff;
-}
-.audioplayer__duration {
-  color: #607D8B;
-  font-weight: 700;
 }
 .audioplayer__buttons {
   display: flex;
@@ -165,14 +151,13 @@ body {
 .audioplayer__volumeContainer {
   display: flex;
   align-items: center;
+  gap: 10px;
   width: 150px;
-}
-.audioplayer__volumeIcon {
-  width: 43px;
 }
 .audioplayer__volumeBar {
   width: 100px;
   height: 6px;
+  margin-bottom: 4px;
   background-color: #607D8B;
   cursor: pointer;
 }
@@ -184,10 +169,8 @@ body {
 .audioplayer__mainControls {
   display: flex;
   justify-content: center;
+  gap: 10px;
   height: 70px;
-}
-.audioplayer__prev, .audioplayer__next {
-  width: 58px;
 }
 .audioplayer__songData {
   margin: 15px 0 0 0;
@@ -203,8 +186,9 @@ body {
   text-transform: none;
   text-align: center;
 }
-.audioplayer__musicItem {
+.audioplayer__songItem {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 10px 0 10px 10px;
   cursor: pointer;
@@ -224,7 +208,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 337px;
+  width: 337px;
 }
 .audioplayer__itemSongName {
   font-weight: 300;

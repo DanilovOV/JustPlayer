@@ -2,7 +2,7 @@ button{cursor:pointer;}
 :focus,:active{outline:none;}
 *{margin:0;padding:0;box-sizing:border-box;}
 h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;}
-button,select,input,textarea{border:none;color:inherit;font-size:inherit;}
+button,select,input,textarea{border:none;color:inherit;font-size:inherit;background:inherit;}
 a,a:visited{text-decoration:none;color:inherit;}
 ::before,::after{box-sizing:border-box;}
 ::placeholder{color:inherit;}
@@ -39,11 +39,6 @@ body {
 #audioplayer__controls {
     margin: 0 auto;
     padding: 1px;
-}
-
-.ap_button {
-    width: 63px;
-    background: #192029;
 }
 
 // Замена перемещаемой песни
@@ -86,10 +81,8 @@ body {
         }
     }
 
-    // .audioplayer__preview
-    &__preview {
-        width: 500px;
-        margin: 0 auto;
+    // .audioplayer__songImage
+    &__songImage {
 
         img {
             width: 500px;
@@ -103,32 +96,23 @@ body {
         align-items: center;
         gap: 10px;
         padding: 10px;
-    }
 
-    // .audioplayer__currentTime
-    &__currentTime {
         color: #607D8B;
         font-weight: 700;
     }
 
-    // .audioplayer__audio-track
-    &__audio-track {
+    // .audioplayer__progressBar
+    &__progressBar {
         flex: 1;
         height: 6px;
         background-color: #607D8B;
         cursor: pointer;
     }
 
-    // .audioplayer__time
-    &__time {
+    // .audioplayer__songProgress
+    &__songProgress {
         height: 6px;
         background-color: #ffffff
-    }
-
-    // .audioplayer__duration
-    &__duration {
-        color: #607D8B;
-        font-weight: 700;
     }
 
     // .audioplayer__buttons
@@ -146,18 +130,15 @@ body {
     &__volumeContainer {
         display: flex;
         align-items: center;
+        gap: 10px;
         width: 150px;
-    }
-
-    // .audioplayer__volumeIcon
-    &__volumeIcon {
-        width: 43px;
     }
     
     // .audioplayer__volumeBar
     &__volumeBar {
         width: 100px;
         height: 6px;
+        margin-bottom: 4px;
         background-color: #607D8B;
         cursor: pointer;
     }
@@ -173,12 +154,8 @@ body {
     &__mainControls {
         display: flex;
         justify-content: center;
+        gap: 10px;
         height: 70px;
-    }
-
-    // .audioplayer__prev , .audioplayer__next
-    &__prev, &__next {
-        width: 58px;
     }
 
     // .audioplayer__songData
@@ -199,9 +176,10 @@ body {
         text-align: center;
 	}
 
-    // .audioplayer__musicItem
-    &__musicItem {
+    // .audioplayer__songItem
+    &__songItem {
         display: flex;
+        justify-content: space-between;
         align-items: center;
         padding: 10px 0 10px 10px;
         cursor: pointer;
@@ -226,7 +204,7 @@ body {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        max-width: 337px;
+        width: 337px;
     }
 
     // .audioplayer__itemSongName
