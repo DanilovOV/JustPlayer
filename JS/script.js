@@ -1,28 +1,29 @@
 // Аудиоплеер ===================================================================
-let audioplayer = document.getElementById('audioplayer'); // Системный аудиоплеер
-let audioplayerBlock = document.querySelector('.audioplayer') // Блок аудиоплеера
-let apMusicList = document.querySelector('.audioplayer__musicList'); // Плейлист
-let apSongs = document.getElementsByClassName('audioplayer__musicItem'); // Массив блоков с песнями
-let apProgressBar = document.querySelector('.audioplayer__audio-track'); // Общий прогрессбар песни
-let apCurrentProgress = document.querySelector(".audioplayer__time"); // Полоска текущего прогресса песни
+let audioplayer = document.querySelector('#audioplayer'); // Системный аудиоплеер
+let audioplayerBlock = document.querySelector('.js-audioplayer'); // Блок аудиоплеера
+let apMusicList = document.querySelector('.js-songs-list'); // Плейлист
+let apSongs = document.getElementsByClassName('js-song-item'); // Массив блоков с песнями
+let apProgressBar = document.querySelector('.js-progress-bar'); // Общий прогрессбар песни
+let apCurrentProgress = document.querySelector(".js-song-progress"); // Полоска текущего прогресса песни
+let apPlayButton = document.querySelector('.js-play-pause-button'); // Кнопка Play/Pause
+let apPrevButton = document.querySelector('.js-prev-button'); // Кнопка следующей песни
+let apNextButton = document.querySelector('.js-next-button'); // Кнопка предыдущей песни
+let apImgPlayPause = document.querySelector('.js-play-pause-img') // Для управления изображением кнопки Play/Pause
+let apImagePreview = document.querySelector('.js-song-image'); // Большое изображение песни в плеере
+let apDuration = document.querySelector('.js-song-duration');  // Данные о продолжительности песни в плеере
+let apCurrentTime = document.querySelector('.js-play-time'); // Данные о текущем времени проигрывания песни в плеере
+let apName = document.querySelector('.js-song-name'); // Данные о названии песни в плеере
+let apAuthor = document.querySelector('.js-song-author'); // Данные об авторе песни в плеере
+let apAlbum = document.querySelector('.js-song-album'); // Данные об альбоме песни в плеере
+let apRepeatButton = document.querySelector('.js-repeat'); // Кнопка включения/выключения повтора песни
+let apVolumeButton = document.querySelector('.js-volume-icon'); // Кнопка выключения/включения звука
+let apVolumeBar = document.querySelector('.js-volume-bar'); // Общий бар громкости
+let apCurrentVolume = document.querySelector('.js-current-volume'); // Бар текущей громкости
+
+let apIsSongPlaying = false; // Указывает, проигрывается ли в данный момент песня
 let apProgressTime; // Определяет состояние прогрессбара песни
 let apIsChangingTime = false; // Указывает, перематывается ли трек на данный момент
-let apPlayButton = document.querySelector('.audioplayer__play'); // Кнопка Play/Pause
-let apPrevButton = document.querySelector('.audioplayer__prev'); // Кнопка следующей песни
-let apNextButton = document.querySelector('.audioplayer__next'); // Кнопка предыдущей песни
-let apImgPlayPause = document.getElementById('play_pause'); // Для управления изображением кнопки Play/Pause
-let apIsSongPlaying = false; // Указывает, проигрывается ли в данный момент песня
-let apImagePreview = document.getElementById('audioplayer__preview'); // Большое изображение песни в плеере
-let apDuration = document.querySelector('.audioplayer__duration');  // Данные о продолжительности песни в плеере
-let apCurrentTime = document.querySelector('.audioplayer__currentTime'); // Данные о текущем времени проигрывания песни в плеере
-let apName = document.querySelector('.audioplayer__name'); // Данные о названии песни в плеере
-let apAuthor = document.querySelector('.audioplayer__author'); // Данные об авторе песни в плеере
-let apAlbum = document.querySelector('.audioplayer__album'); // Данные об альбоме песни в плеере
-let apRepeatButton = document.querySelector('.audioplayer__repeat'); // Кнопка включения/выключения повтора песни
 let apIsRepeat = false; // Определяет, включен ли повтор песни
-let apVolumeButton = document.querySelector('.audioplayer__volumeIcon'); // Кнопка выключения/включения звука
-let apVolumeBar = document.querySelector('.audioplayer__volumeBar'); // Общий бар громкости
-let apCurrentVolume = document.querySelector('.audioplayer__currentVolume'); // Бар текущей громкости
 let apCurrentVolumeData = 0.5; // Значение громкости. Нужно чтобы восстановить уровень звука, бывший до его выключения
 let apIsMuted = false; // Определяет, выключен ли звук или нет
 let apSongShadow = 0; // Замена блока пока он перемещается
@@ -31,9 +32,7 @@ let apSongSequence = []; // Для хранения данных о текуще
 let apSongID = 0; // Номер текущей песни в songsMetaData
 let apCurrentSongPos = 0; // Определяет какой по счету трек должен играть
 let apWaitMovingEnd = false; // Указывает на то, что какой-либо трек в данный момент перемещается
-
-// Нужно для корректного рассчета позиции всех перемещаемых элементов (блоки песен, полоски времени и звука)
-let apPositionMode = 0; 
+let apPositionMode = 0; // Позиционирование плеера. Нужно для корректных рассчетов перемещения элементов
 
 apPlayButton.addEventListener("click", PlayPauseHandler); // Кнопочка Play/Pause
 apPrevButton.addEventListener("click", () => ButtonPrevNextHandler('prev')); // Кнопочка предыдущей песни
@@ -208,7 +207,7 @@ function GetPlaylistFromStorage() {
 
 // Перезаписываем очередность песен при перемещении какой-либо песни
 function PlaylistReplaceSong() {
-    let newSongElements = document.getElementsByClassName('audioplayer__musicItem'); 
+    let newSongElements = document.getElementsByClassName('js-song-item'); 
     for (let i = 0; i < songsMetaData.length; i++) {
         apSongSequence[i] = newSongElements[i].dataset.songIndex;
     }
@@ -227,8 +226,8 @@ function BuildNewPlaylist() {
 // Создает HTML разметку музыки
 function MusicCreateHTML() {
     for (let i = 0; i < songsMetaData.length; i++) {
-        document.querySelector('.audioplayer__musicList').insertAdjacentHTML('beforeend', 
-            `<div class="audioplayer__musicItem" data-song-index="${apSongSequence[i]}"> \
+        document.querySelector('.js-songs-list').insertAdjacentHTML('beforeend', 
+            `<div class="audioplayer__songItem js-song-item" data-song-index="${apSongSequence[i]}"> \
                 <div class="audioplayer__playingStatusIcon"> \
                     <img src="Images/Icons/1x1.png" alt="" width="100%"> \
                 </div> \
@@ -275,7 +274,7 @@ function GetCurrentSongPosition() {
 // Проверяет, на какую часть блока указывает курсор
 function CheckPartOfSongBlock(e) {
     if (e.clientX > 0 && e.clientX < window.screen.availWidth && e.clientY > 0 && e.clientY < window.screen.availHeight) {
-        let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.audioplayer__musicItem');
+        let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.js-song-item');
         if (!songMouseIsOver) return;
         if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 8)) songMouseIsOver.after(apSongShadow);
         else if (e.clientY - songMouseIsOver.getBoundingClientRect().top > (songMouseIsOver.offsetHeight / 8 * 7)) songMouseIsOver.before(apSongShadow);
@@ -543,7 +542,7 @@ function SongClickHandler(e) {
     if (e.which != 1) return; // Если не ПКМ, то обрабатываем
 
     // Блок, на который мы нажали
-    movingSongData.songBlock = e.target.closest('.audioplayer__musicItem');
+    movingSongData.songBlock = e.target.closest('.js-song-item');
 
     // Координаты, на которых мы нажали на блок pageX/pageY
     // По ним потом будем определять, достаточно ли сдвинули блок для активации перемещения
