@@ -35,11 +35,17 @@ body {
 
 
 
+.audioplayer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
 .audioplayer {
     display: flex;
     width: 1000px;
     height: 720px;
-    margin: 100px auto 0;
     font: 14px/1.5 "Helvetica Neue", sans-serif;
     background: #192029;
     box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);

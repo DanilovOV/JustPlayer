@@ -9,57 +9,58 @@
     </head>
     <body>
         <div class="wrapper">
-            <div class="audioplayer js-audioplayer">
-                <div class="audioplayer__left">
-                    <audio id="audioplayer" src=""></audio>
-                    <div class="audioplayer__songImage">
-                        <img class="js-song-image" src="" draggable="false">
-                    </div>
-                    <div class="audioplayer__controls">
-                        <div class="audioplayer__trackblock">
-                            <div class="js-play-time"></div>
-                            <div class="audioplayer__progressBar js-progress-bar">
-                                <div class="audioplayer__songProgress js-song-progress"></div>
-                            </div>
-                            <div class="js-song-duration"></div>
+            <div class="audioplayer-container">
+                <div class="audioplayer js-audioplayer">
+                    <div class="audioplayer__left">
+                        <audio id="audioplayer" src=""></audio>
+                        <div class="audioplayer__songImage">
+                            <img class="js-song-image" src="" draggable="false">
                         </div>
-                        <div class="audioplayer__buttons">
-                            <button class="audioplayer__repeat js-repeat">
-                                <img src="Images/Icons/repeat-off.svg" draggable="false">
-                            </button>
-                            <div class="audioplayer__mainControls">
-                                <button class="js-prev-button">
-                                    <img src="Images/Icons/prev.svg" draggable="false">
-                                </button>
-                                <button class="js-play-pause-button">
-                                    <img class="js-play-pause-img" src="Images/Icons/play.svg" draggable="false">
-                                </button>
-                                <button class="js-next-button">
-                                    <img src="Images/Icons/next.svg" draggable="false">
-                                </button>
+                        <div class="audioplayer__controls">
+                            <div class="audioplayer__trackblock">
+                                <div class="js-play-time"></div>
+                                <div class="audioplayer__progressBar js-progress-bar">
+                                    <div class="audioplayer__songProgress js-song-progress"></div>
+                                </div>
+                                <div class="js-song-duration"></div>
                             </div>
-                            <div class="audioplayer__volumeContainer">
-                                <button class="js-volume-icon">
-                                    <img src="Images/Icons/volume.svg" draggable="false">
+                            <div class="audioplayer__buttons">
+                                <button class="audioplayer__repeat js-repeat">
+                                    <img src="Images/Icons/repeat-off.svg" draggable="false">
                                 </button>
-                                <div class="audioplayer__volumeBar js-volume-bar">
-                                    <div class="audioplayer__currentVolume js-current-volume"></div>
+                                <div class="audioplayer__mainControls">
+                                    <button class="js-prev-button">
+                                        <img src="Images/Icons/prev.svg" draggable="false">
+                                    </button>
+                                    <button class="js-play-pause-button">
+                                        <img class="js-play-pause-img" src="Images/Icons/play.svg" draggable="false">
+                                    </button>
+                                    <button class="js-next-button">
+                                        <img src="Images/Icons/next.svg" draggable="false">
+                                    </button>
+                                </div>
+                                <div class="audioplayer__volumeContainer">
+                                    <button class="js-volume-icon">
+                                        <img src="Images/Icons/volume.svg" draggable="false">
+                                    </button>
+                                    <div class="audioplayer__volumeBar js-volume-bar">
+                                        <div class="audioplayer__currentVolume js-current-volume"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="audioplayer__songData">
+                            <div class="audioplayer__name js-song-name"></div>
+                            <div class="js-song-author"></div>
+                            <div class="js-song-album"></div>
+                        </div>
                     </div>
-                    <div class="audioplayer__songData">
-                        <div class="audioplayer__name js-song-name"></div>
-                        <div class="js-song-author"></div>
-                        <div class="js-song-album"></div>
+                        
+                    <div class="audioplayer__right">
+                        <div class="js-songs-list"></div>
                     </div>
-                </div>
-                    
-                <div class="audioplayer__right">
-                    <div class="js-songs-list"></div>
                 </div>
             </div>
-
         </div>
         <script src="JS/script.js"></script>
     </body>
