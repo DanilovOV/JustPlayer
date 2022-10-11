@@ -35,21 +35,7 @@ body {
 
 
 
-// АУДИОПЛЕЕР=======================================================================
-#audioplayer__controls {
-    margin: 0 auto;
-    padding: 1px;
-}
-
-// Замена перемещаемой песни
-.songShadow {
-    width: 498px;
-    height: 70px;
-    background: inherit;
-}
-
 .audioplayer {
-    position: static;
     display: flex;
     width: 1000px;
     height: 720px;
@@ -96,7 +82,6 @@ body {
         align-items: center;
         gap: 10px;
         padding: 10px;
-
         color: #607D8B;
         font-weight: 700;
     }
@@ -247,4 +232,8 @@ body {
     pointer-events:none;
     transition: none;
 }
-// !АУДИОПЛЕЕР======================================================================
+
+.songShadow {
+    height: 70px;
+    background: inherit;
+}

@@ -77,19 +77,7 @@ body {
   margin: 0px auto;
 }
 
-#audioplayer__controls {
-  margin: 0 auto;
-  padding: 1px;
-}
-
-.songShadow {
-  width: 498px;
-  height: 70px;
-  background: inherit;
-}
-
 .audioplayer {
-  position: static;
   display: flex;
   width: 1000px;
   height: 720px;
@@ -241,4 +229,9 @@ body {
   z-index: 9999;
   pointer-events: none;
   transition: none;
+}
+
+.songShadow {
+  height: 70px;
+  background: inherit;
 }
