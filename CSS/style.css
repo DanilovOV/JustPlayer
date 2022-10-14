@@ -187,15 +187,25 @@ body {
   padding: 10px 0 10px 10px;
   cursor: pointer;
 }
+.audioplayer__songItem:hover {
+  background-color: #30363e;
+}
+.audioplayer__songItem:hover .audioplayer__playingStatusIcon {
+  opacity: 1;
+}
 .audioplayer__playingStatusIcon {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-right: 10px;
+  opacity: 0;
 }
 .audioplayer__playingStatusIcon img {
   width: 20px;
   height: 20px;
+}
+.audioplayer__activeSong .audioplayer__playingStatusIcon {
+  opacity: 1;
 }
 .audioplayer__itemMetaData {
   flex: 1;
