@@ -44,6 +44,8 @@ apVolumeBarWrapper.addEventListener('mousedown', WannaChangeVolume); // Когд
 audioplayer.addEventListener('play', setPlayState);
 audioplayer.addEventListener('pause', setPauseState);
 audioplayer.addEventListener('ended', songEndedHandler);
+navigator.mediaSession.setActionHandler('previoustrack', () => ButtonPrevNextHandler('prev'));
+navigator.mediaSession.setActionHandler('nexttrack', () => ButtonPrevNextHandler('next'));
 
 function songEndedHandler() {
     if (!apIsSongMoving) {
@@ -429,8 +431,12 @@ function ButtonPrevNextHandler(prevOrNext) {
         }
 
         RepeatHandler('no');
-        SwitchSong();
-        if (!audioplayer.paused) audioplayer.play();
+        if (audioplayer.paused) {
+            SwitchSong();
+        } else {
+            SwitchSong();
+            audioplayer.play();
+        }
     }
 }
 
