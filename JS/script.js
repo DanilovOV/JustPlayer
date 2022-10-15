@@ -56,13 +56,13 @@ let movingSongData = {};
 
 let songsMetaData = [
     {
-        "name": "Battles",
-        "author": "Alpine Universe",
-        "album": "Single",
-        "url": "Songs/Battles.mp3",
-        "cover_big": "Images/Covers/Battles.jpg",
-        "cover_small": "Images/Covers/Battles_small.jpg",
-        "duration": "3:39"
+        "name": "Half Moon",
+        "author": "Tinlicker feat Morgan Jones",
+        "album": "Remember the Future",
+        "url": "Songs/Half Moon.mp3",
+        "cover_big": "Images/Covers/Half_Moon.jpg",
+        "cover_small": "Images/Covers/Half_Moon_small.jpg",
+        "duration": "7:21"
     },
     {
         "name": "Scary People",
@@ -72,6 +72,15 @@ let songsMetaData = [
         "cover_big": "Images/Covers/Where_I_Go_To_Disappear.jpg",
         "cover_small": "Images/Covers/Where_I_Go_To_Disappear_small.jpg",
         "duration": "3:06"
+    },
+    {
+        "name": "Battles",
+        "author": "Alpine Universe",
+        "album": "Single",
+        "url": "Songs/Battles.mp3",
+        "cover_big": "Images/Covers/Battles.jpg",
+        "cover_small": "Images/Covers/Battles_small.jpg",
+        "duration": "3:39"
     },
     {
         "name": "The Human Kolossus",
@@ -135,15 +144,6 @@ let songsMetaData = [
         "cover_big": "Images/Covers/Let_There_To_Be_Fire.jpg",
         "cover_small": "Images/Covers/Let_There_To_Be_Fire_small.jpg",
         "duration": "5:46"
-    },
-    {
-        "name": "Half Moon",
-        "author": "Tinlicker feat Morgan Jones",
-        "album": "Remember the Future",
-        "url": "Songs/Half Moon.mp3",
-        "cover_big": "Images/Covers/Half_Moon.jpg",
-        "cover_small": "Images/Covers/Half_Moon_small.jpg",
-        "duration": "7:21"
     },
     {
         "name": "Reverse Dance",
@@ -316,7 +316,7 @@ function AddSongBlockListeners() {
 function SongBlockClick() {
     // Если кликнутая песня не та, которую мы сейчас слушаем, переключаемся
     if (!this.classList.contains('audioplayer__activeSong')) {
-        apSongs[apCurrentSongPos].classList.remove('audioplayer__activeSong');
+        document.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
         apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/list-play.png';
         apSongID = this.dataset.songIndex;
         apImgPlayPause.src = 'Images/Icons/pause.svg';
@@ -399,8 +399,6 @@ function ConvertTime(playingTime) {
 function PlayPauseHandler(playPauseParam) {
     if (!apIsSongPlaying || playPauseParam == 'play') {
         apIsSongPlaying = true;
-        apSongs[apCurrentSongPos].classList.add('audioplayer__activeSong');
-        apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/now-playing.png';
         apImgPlayPause.src = 'Images/Icons/pause.svg';
         audioplayer.play();
     }
@@ -416,7 +414,7 @@ function PlayPauseHandler(playPauseParam) {
 // Переключает песню на предыдущую
 function ButtonPrevNextHandler(prevOrNext) {
     if (!apIsSongMoving) {
-        apSongs[apCurrentSongPos].classList.remove('audioplayer__activeSong');
+        document.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
         apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/list-play.png';
 
         if (prevOrNext == 'prev') {
