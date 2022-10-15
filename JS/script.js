@@ -19,7 +19,6 @@ let apVolumeButton = document.querySelector('.js-volume-icon'); // Кнопка 
 let apVolumeBarWrapper = document.querySelector('.js-volume-bar-wrapper'); // Общая полоска громкости
 let apCurrentVolume = document.querySelector('.js-current-volume'); // Полоска текущей громкости
 
-let apIsSongPlaying = false; // Указывает, проигрывается ли в данный момент песня
 let apProgressTime; // Определяет состояние прогрессбара песни
 let apIsChangingTime = false; // Указывает, перематывается ли трек на данный момент
 let apIsRepeat = false; // Определяет, включен ли повтор песни
@@ -41,6 +40,25 @@ apRepeatButton.addEventListener('click', RepeatHandler); // Кнопка пов�
 audioplayer.addEventListener('timeupdate', UpdateTimeAndBar); // Когда обновляется время плеера
 apProgressBarWrapper.addEventListener('mousedown', WannaChangeTime); // Клик по прогрессбару песни для перемотки
 apVolumeBarWrapper.addEventListener('mousedown', WannaChangeVolume); // Когда пользователь кликает по полоске громкости
+
+audioplayer.addEventListener('play', setPlayState);
+audioplayer.addEventListener('pause', setPauseState);
+audioplayer.addEventListener('ended', songEndedHandler);
+
+function songEndedHandler() {
+    if (!apIsSongMoving) {
+        if (!apIsRepeat) {
+            apSongList.querySelector('.audioplayer__activeSong img').src = 'Images/Icons/list-play.png';
+            apSongList.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
+            
+            apCurrentSongPos < songsMetaData.length - 1 ? apCurrentSongPos++ : apCurrentSongPos = 0;
+            SwitchSong();
+        }
+        audioplayer.play();
+    } else {
+        apWaitMovingEnd = true;
+    }
+}
 
 /*  
     Содержит данные о переносимой песне:
@@ -183,7 +201,7 @@ function FirstSongDataInit() {
     AddSongBlockListeners();
 
     
-    apCurrentVolumeData = 0;
+    apCurrentVolumeData = 0.5;
     apCurrentTime.innerHTML = '0:00';
     apSongID = apSongSequence[apCurrentSongPos];
     
@@ -303,7 +321,6 @@ function SetPositionMode() {
 
 
 
-// Навешиваем на блоки с песнями функции
 function AddSongBlockListeners() {
     apSongs.forEach(song => {
         // обработка клика по песне
@@ -363,22 +380,6 @@ function UpdateTimeAndBar() {
     let audioTime = Math.round(audioplayer.currentTime);
     let audioLength = Math.round(audioplayer.duration);
     apCurrentProgress.style.width = (audioTime * 100) / audioLength + '%';
-
-    if (audioTime != audioLength || !apIsSongPlaying) return;
-
-    if (!apIsSongMoving) {
-        if (!apIsRepeat) {
-            apSongList.childNodes[apCurrentSongPos].classList.remove('audioplayer__activeSong');
-            apSongList.childNodes[apCurrentSongPos].querySelector('img').src = 'Images/Icons/list-play.png';
-            
-            if (apCurrentSongPos < songsMetaData.length - 1) apCurrentSongPos++;
-            else apCurrentSongPos = 0;
-            SwitchSong();
-        }
-        audioplayer.play();
-    } else {
-        apWaitMovingEnd = true;
-    }
 }
 
 
@@ -396,16 +397,20 @@ function ConvertTime(playingTime) {
 // Определяет, ставить ли песню на паузу или наоборот включить
 // Вызов с параметром 'play' всегда включает песню
 function PlayPauseHandler(playPauseParam) {
-    if (!apIsSongPlaying || playPauseParam == 'play') {
-        apIsSongPlaying = true;
-        apImgPlayPause.src = 'Images/Icons/pause.svg';
+    if (audioplayer.paused || playPauseParam == 'play') {
         audioplayer.play();
     }
     else {
-        apIsSongPlaying = false;
-        apImgPlayPause.src = 'Images/Icons/play.svg';
         audioplayer.pause();
     }
+}
+
+function setPlayState() {
+    apImgPlayPause.src = 'Images/Icons/pause.svg';
+}
+
+function setPauseState() {
+    apImgPlayPause.src = 'Images/Icons/play.svg';
 }
 
 
@@ -425,7 +430,7 @@ function ButtonPrevNextHandler(prevOrNext) {
 
         RepeatHandler('no');
         SwitchSong();
-        if (apIsSongPlaying) audioplayer.play();
+        if (!audioplayer.paused) audioplayer.play();
     }
 }
 
@@ -612,10 +617,9 @@ function EndMoveSong() {
         movingSongData = {};
     }
 
-    // если песня закончилась пока мы переносили какую-либо песню
     if (apWaitMovingEnd) {
         apWaitMovingEnd = false;
-        UpdateTimeAndBar();
+        songEndedHandler();
     }
 }
 
