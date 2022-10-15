@@ -2,7 +2,7 @@ let audioplayer = document.querySelector('#audioplayer'); // Системный 
 let audioplayerBlock = document.querySelector('.js-audioplayer'); // Блок аудиоплеера
 let apMusicList = document.querySelector('.js-songs-list'); // Плейлист
 let apSongs; // Массив блоков с песнями
-let apProgressBar = document.querySelector('.js-progress-bar'); // Общий прогрессбар песни
+let apProgressBarWrapper = document.querySelector('.js-progress-bar-wrapper'); // Общий прогрессбар песни
 let apCurrentProgress = document.querySelector(".js-song-progress"); // Полоска текущего прогресса песни
 let apPlayButton = document.querySelector('.js-play-pause-button'); // Кнопка Play/Pause
 let apPrevButton = document.querySelector('.js-prev-button'); // Кнопка следующей песни
@@ -16,7 +16,7 @@ let apAuthor = document.querySelector('.js-song-author'); // Данные об �
 let apAlbum = document.querySelector('.js-song-album'); // Данные об альбоме песни в плеере
 let apRepeatButton = document.querySelector('.js-repeat'); // Кнопка включения/выключения повтора песни
 let apVolumeButton = document.querySelector('.js-volume-icon'); // Кнопка выключения/включения звука
-let apVolumeBar = document.querySelector('.js-volume-bar'); // Общая полоска громкости
+let apVolumeBarWrapper = document.querySelector('.js-volume-bar-wrapper'); // Общая полоска громкости
 let apCurrentVolume = document.querySelector('.js-current-volume'); // Полоска текущей громкости
 
 let apIsSongPlaying = false; // Указывает, проигрывается ли в данный момент песня
@@ -39,8 +39,8 @@ apNextButton.addEventListener('click', () => ButtonPrevNextHandler('next')); // 
 apVolumeButton.addEventListener('click', ButtonVolumeClick); // Кнопка включения/выключения звука
 apRepeatButton.addEventListener('click', RepeatHandler); // Кнопка повтора песни
 audioplayer.addEventListener('timeupdate', UpdateTimeAndBar); // Когда обновляется время плеера
-apProgressBar.addEventListener('mousedown', WannaChangeTime); // Клик по прогрессбару песни для перемотки
-apVolumeBar.addEventListener('mousedown', WannaChangeVolume); // Когда пользователь кликает по полоске громкости
+apProgressBarWrapper.addEventListener('mousedown', WannaChangeTime); // Клик по прогрессбару песни для перемотки
+apVolumeBarWrapper.addEventListener('mousedown', WannaChangeVolume); // Когда пользователь кликает по полоске громкости
 navigator.mediaSession.setActionHandler('previoustrack', () => ButtonPrevNextHandler('prev')); // Нажатие клавиши предыдущий трек
 navigator.mediaSession.setActionHandler('nexttrack', () => ButtonPrevNextHandler('next')); // Нажатие клавиши следующий трек
 navigator.mediaSession.setActionHandler('play', PlayPauseHandler); // Нажатие клавиши play
@@ -446,12 +446,12 @@ function WannaChangeTime(e) {
 
 function ChangeTime(e) {
     let mouseX;
-    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apProgressBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - apProgressBar.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
+    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apProgressBarWrapper.offsetLeft);
+    else mouseX = Math.floor(e.pageX - apProgressBarWrapper.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
 
-    apProgressTime = mouseX / (apProgressBar.offsetWidth / 100);
+    apProgressTime = mouseX / (apProgressBarWrapper.offsetWidth / 100);
     if (mouseX < 0) apCurrentProgress.style.width = '0%';
-    else if (mouseX > apProgressBar.offsetWidth) apCurrentProgress.style.width = '100%';
+    else if (mouseX > apProgressBarWrapper.offsetWidth) apCurrentProgress.style.width = '100%';
     else apCurrentProgress.style.width = mouseX + 'px';
 }
 
@@ -507,15 +507,15 @@ function WannaChangeVolume(e) {
 // Изменяет громкость и меняет иконку громкости
 function ChangeVolume(e) {
     let mouseX;
-    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apVolumeBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - apVolumeBar.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
+    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apVolumeBarWrapper.offsetLeft);
+    else mouseX = Math.floor(e.pageX - apVolumeBarWrapper.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
     
     if (mouseX < 0) { // Если курсор левее полоски громкости - выключаем звук
         apCurrentVolume.style.width = '0%';
         apIsMuted = true;
         apVolumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
     }
-    else if (mouseX > apVolumeBar.offsetWidth) { // Если правее - звук на 100%
+    else if (mouseX > apVolumeBarWrapper.offsetWidth) { // Если правее - звук на 100%
         apCurrentVolume.style.width = '100%';
         apIsMuted = false;
         apVolumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
@@ -526,7 +526,7 @@ function ChangeVolume(e) {
         apVolumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
     }
 
-    audioplayer.volume = apCurrentVolume.offsetWidth / apVolumeBar.offsetWidth;
+    audioplayer.volume = apCurrentVolume.offsetWidth / apVolumeBarWrapper.offsetWidth;
 }
 
 function StopChangeVolume() {
@@ -555,18 +555,18 @@ function SongClickHandler(e) {
 }
 
 function MoveSong(e) {
-    if (!apIsSongMoving) { // Если еще не двигали песню
+    if (!apIsSongMoving) { // если еще не двигали песню
 
-        // Не передвигаем, если мышь передвинулась в нажатом состоянии недостаточно далеко
+        // не передвигаем, если мышь передвинулась в нажатом состоянии недостаточно далеко
         if (Math.abs(e.pageX - movingSongData.downX) < 3 && Math.abs(e.pageY - movingSongData.downY) < 3) return;
         
-        // Смещение блока относительно курсора
+        // смещение блока относительно курсора
         let box = movingSongData.songBlock.getBoundingClientRect();
 
         movingSongData.shiftX = movingSongData.downX - box.left;
         movingSongData.shiftY = movingSongData.downY - box.top;
 
-        // Определяем начальную позицию блока, который будем двигать, чтобы вернуть его на место если блок переместят в запрещенное место
+        // определяем начальную позицию блока, который будем двигать, чтобы вернуть его на место если блок переместят в запрещенное место
         for (let i = 0; i < apMusicList.childNodes.length; i++) {
             if (movingSongData.songBlock == apMusicList.childNodes[i]) {
                 apStartMoveBlockPos = i;
@@ -574,11 +574,11 @@ function MoveSong(e) {
             }
         }
 
-        // Делаем выбранный трек передвигаемым
+        // делаем выбранный трек передвигаемым
         apMusicList.appendChild(movingSongData.songBlock);
         movingSongData.songBlock.classList.add('movable');
 
-        // Создаем клон блока, который показывает, куда будет перемещен блок если отпустить его
+        // создаем клон блока, который показывает, куда будет перемещен блок если отпустить его
         apSongShadow = document.createElement('div');
         apSongShadow.classList.add('songShadow');
         apMusicList.childNodes[apStartMoveBlockPos].before(apSongShadow);
@@ -586,11 +586,11 @@ function MoveSong(e) {
         apIsSongMoving = true;
     }
 
-    // Отобразить перенос объекта при каждом движении мыши
+    // меняем координаты перемещаемой песни при каждом движении мыши
     if (apPositionMode == 0) { // Для position = static
         movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX + window.scrollX + 'px';
         movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY + window.scrollY + 'px';
-    } else { // Для position = relative/absolute/fixed
+    } else { // для position = relative/absolute/fixed
         movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX - audioplayerBlock.getBoundingClientRect().left + 'px';
         movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY - audioplayerBlock.getBoundingClientRect().top + 'px';
     }
@@ -598,7 +598,7 @@ function MoveSong(e) {
     CheckPartOfSongBlock(e);
 }
 
-function EndMoveSong(e) {
+function EndMoveSong() {
     document.removeEventListener('mousemove', MoveSong);
     document.removeEventListener('mouseup', EndMoveSong);
 

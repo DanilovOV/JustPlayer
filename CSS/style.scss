@@ -92,12 +92,21 @@ body {
         font-weight: 700;
     }
 
+    // .audioplayer__progressBarWrapper
+    &__progressBarWrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        height: 6px;
+        padding: 15px 0;
+        cursor: pointer;
+    }
+
     // .audioplayer__progressBar
     &__progressBar {
         flex: 1;
         height: 6px;
         background-color: #607D8B;
-        cursor: pointer;
     }
 
     // .audioplayer__songProgress
@@ -125,13 +134,22 @@ body {
         width: 150px;
     }
     
-    // .audioplayer__volumeBar
-    &__volumeBar {
+    // .audioplayer__volumeBarWrapper
+    &__volumeBarWrapper {
+        display: flex;
+        align-items: center;
         width: 100px;
         height: 6px;
+        padding: 15px 0;
         margin-bottom: 4px;
-        background-color: #607D8B;
         cursor: pointer;
+    }
+
+    // .audioplayer__volumeBar
+    &__volumeBar {
+        flex: 1;
+        height: 6px;
+        background-color: #607D8B;
     }
 
     // .audioplayer__currentVolume
