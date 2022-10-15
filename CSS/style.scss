@@ -105,6 +105,7 @@ body {
     // .audioplayer__progressBar
     &__progressBar {
         flex: 1;
+        display: flex;
         height: 6px;
         background-color: #607D8B;
     }
