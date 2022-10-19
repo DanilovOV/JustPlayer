@@ -9,17 +9,19 @@ a,a:visited{text-decoration:none;color:inherit;}
 textarea{resize:none;}
 li{list-style:none;}
 
-html, body {
-    position: relative;
-    width: 100%;
-    height: 100%;
+
+:root {
+    --player-bg-color: #192029;
+    --player-text-color: #607D8B;
 }
 
 body {
+    position: relative;
     min-width: 320px;
     font: 14px/1.15 "Helvetica Neue", sans-serif;
     background-color: #222629;
     color: #e3e3e3;
+    overflow: hidden;
 }
 
 .wrapper {
@@ -47,7 +49,7 @@ body {
     width: 1000px;
     height: 720px;
     font: 14px/1.5 "Helvetica Neue", sans-serif;
-    background: #192029;
+    background: var(--player-bg-color);
     box-shadow: 0 2px 12px 8px rgba(0, 0, 0, 0.1);
     user-select: none;
 
@@ -88,7 +90,7 @@ body {
         align-items: center;
         gap: 10px;
         padding: 10px;
-        color: #607D8B;
+        color: var(--player-text-color);
         font-weight: 700;
     }
 
@@ -107,7 +109,7 @@ body {
         flex: 1;
         display: flex;
         height: 6px;
-        background-color: #607D8B;
+        background-color: var(--player-text-color);
     }
 
     // .audioplayer__songProgress
@@ -150,7 +152,7 @@ body {
     &__volumeBar {
         flex: 1;
         height: 6px;
-        background-color: #607D8B;
+        background-color: var(--player-text-color);
     }
 
     // .audioplayer__currentVolume
@@ -171,7 +173,7 @@ body {
     // .audioplayer__songData
     &__songData {
         margin: 15px 0 0 0;
-        color: #607D8B;
+        color: var(--player-text-color);
         text-align: center;
         text-transform: uppercase;
         font-weight: 700;
@@ -192,6 +194,7 @@ body {
         justify-content: space-between;
         align-items: center;
         padding: 10px 0 10px 10px;
+        background: var(--player-bg-color);
         cursor: pointer;
 
         &:hover {
@@ -240,7 +243,7 @@ body {
 
     // .audioplayer__itemAuthorAlbum
     &__itemAuthorAlbum {
-        color: #607D8B;
+        color: var(--player-text-color);
         text-transform: uppercase;
         font-weight: 700;
         white-space: nowrap;
@@ -258,7 +261,7 @@ body {
     // .audioplayer__itemDuration
     &__itemDuration {
         width: 55px;
-        color: #607D8B;
+        color: var(--player-text-color);
         font-size: 16px;
         font-weight: 500;
         text-align: center;
