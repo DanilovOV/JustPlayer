@@ -46,6 +46,8 @@ audioplayer.addEventListener('pause', setPauseState);
 audioplayer.addEventListener('ended', songEndedHandler);
 navigator.mediaSession.setActionHandler('previoustrack', () => ButtonPrevNextHandler('prev'));
 navigator.mediaSession.setActionHandler('nexttrack', () => ButtonPrevNextHandler('next'));
+navigator.mediaSession.setActionHandler('play', PlayPauseHandler);
+navigator.mediaSession.setActionHandler('pause', PlayPauseHandler);
 
 function songEndedHandler() {
     if (!apIsSongMoving) {
