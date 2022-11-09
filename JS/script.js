@@ -201,7 +201,10 @@ function FirstSongDataInit() {
     SetPositionMode();
     GetPlaylistFromStorage();
     CheckMetaDataChanging();
-    MusicCreateHTML();
+
+    renderTracks()
+    apSongs = document.querySelectorAll('.js-song-item')
+
     AddSongBlockListeners();
 
     
@@ -243,25 +246,25 @@ function PlaylistReplaceSong() {
 
 
 
-// Создает HTML разметку музыки
-function MusicCreateHTML() {
-    for (let i = 0; i < songsMetaData.length; i++) {
-        document.querySelector('.js-songs-list').insertAdjacentHTML('beforeend', 
-            `<div class="audioplayer__songItem js-song-item" data-song-index="${apSongSequence[i]}"> \
+// Создает HTML-разметку музыки
+function renderTracks() {
+    const songList = document.querySelector('.js-songs-list')
+
+    apSongSequence.forEach(num => {
+        songList.insertAdjacentHTML('beforeend', 
+            `<div class="audioplayer__songItem js-song-item" data-song-index="${num}"> \
                 <div class="audioplayer__playingStatusIcon"> \
                     <img src="Images/Icons/list-play.png"> \
                 </div> \
                 <div class="audioplayer__itemMetaData"> \
-                    <span class="audioplayer__itemSongName">${songsMetaData[apSongSequence[i]].name}</span> \
-                    <span class="audioplayer__itemAuthorAlbum">${songsMetaData[apSongSequence[i]].author} - ${songsMetaData[apSongSequence[i]].album}</span> \
+                    <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
+                    <span class="audioplayer__itemAuthorAlbum">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
                 </div> \
-                <img src="${songsMetaData[apSongSequence[i]].cover_small}" class="audioplayer__smallCover"> \
-                <div class="audioplayer__itemDuration">${songsMetaData[apSongSequence[i]].duration}</div> \
+                <img src="${songsMetaData[num].cover_small}" class="audioplayer__smallCover"> \
+                <div class="audioplayer__itemDuration">${songsMetaData[num].duration}</div> \
             </div>`
         )
-    }
-
-    apSongs = document.querySelectorAll('.js-song-item');
+    })
 }
 
 
