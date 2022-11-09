@@ -1,27 +1,45 @@
 let systemPlayer = document.querySelector('#audioplayer')
+systemPlayer.addEventListener('play', setPlayState)
+systemPlayer.addEventListener('pause', setPauseState)
+systemPlayer.addEventListener('ended', songEndedHandler)
+systemPlayer.addEventListener('timeupdate', UpdateTimeAndBar)
+
+let progressBar = document.querySelector('.js-progress-bar')
+progressBar.addEventListener('mousedown', startFastForward)
+
+let playPauseButton = document.querySelector('.js-play-pause-button')
+playPauseButton.addEventListener("click", setPlayPause)
+
+let prevSongButton = document.querySelector('.js-prev-button')
+prevSongButton.addEventListener("click", () => switchSong('prev'))
+
+let nextSongButton = document.querySelector('.js-next-button')
+nextSongButton.addEventListener('click', () => switchSong('next'))
+
+let repeatButton = document.querySelector('.js-repeat')
+repeatButton.addEventListener('click', setRepeat)
+
+let volumeButton = document.querySelector('.js-volume-icon')
+volumeButton.addEventListener('click', toggleVolume)
+
+let volumeBar = document.querySelector('.js-volume-bar-wrapper')
+volumeBar.addEventListener('mousedown', startChangeVolume)
+
 let audioplayer = document.querySelector('.js-audioplayer')
 let songList = document.querySelector('.js-songs-list')
-let progressBar = document.querySelector('.js-progress-bar')
 let songProgress = document.querySelector(".js-song-progress")
-let playPauseButton = document.querySelector('.js-play-pause-button')
-let prevSongButton = document.querySelector('.js-prev-button')
-let nextSongButton = document.querySelector('.js-next-button')
 let playPauseImg = document.querySelector('.js-play-pause-img')
 let bigCover = document.querySelector('.js-big-cover')
 let songDuration = document.querySelector('.js-song-duration')
 let currentPlayTime = document.querySelector('.js-play-time')
+let currentVolume = document.querySelector('.js-current-volume')
 let songNameElem = document.querySelector('.js-song-name')
 let authorElem = document.querySelector('.js-song-author')
 let albumElem = document.querySelector('.js-song-album')
-let repeatButton = document.querySelector('.js-repeat')
-let volumeButton = document.querySelector('.js-volume-icon')
-let volumeBar = document.querySelector('.js-volume-bar-wrapper')
-let currentVolume = document.querySelector('.js-current-volume')
 let songShadow
 
 let playerPosition
 let songsOrder = []
-let songElemsArr = []
 let currentVolumeData = 0.5
 let currentSongID
 let newCurrentPlaytime
@@ -33,17 +51,6 @@ let isRepeat
 let isMuted
 let waitEndMove
 
-playPauseButton.addEventListener("click", setPlayPause)
-prevSongButton.addEventListener("click", () => switchSong('prev'))
-nextSongButton.addEventListener('click', () => switchSong('next'))
-volumeButton.addEventListener('click', toggleVolume)
-repeatButton.addEventListener('click', setRepeat)
-systemPlayer.addEventListener('timeupdate', UpdateTimeAndBar)
-progressBar.addEventListener('mousedown', startFastForward)
-volumeBar.addEventListener('mousedown', startChangeVolume)
-systemPlayer.addEventListener('play', setPlayState);
-systemPlayer.addEventListener('pause', setPauseState);
-systemPlayer.addEventListener('ended', songEndedHandler);
 navigator.mediaSession.setActionHandler('previoustrack', () => switchSong('prev'));
 navigator.mediaSession.setActionHandler('nexttrack', () => switchSong('next'));
 navigator.mediaSession.setActionHandler('play', setPlayPause);
@@ -180,34 +187,27 @@ let songsMetaData = [
 
 
 
-FirstSongDataInit();
+initAudioplayer()
 
 // Инициализируем данные о песнях при загрузке страницы
-function FirstSongDataInit() {
-    SetPositionMode();
-    downloadSongOrder();
-    CheckMetaDataChanging();
+function initAudioplayer() {
+    SetPositionMode()
+    downloadSongOrder()
+    CheckMetaDataChanging()
+    renderSongs()
 
-    renderTracks()
-    songElemsArr = document.querySelectorAll('.js-song-item')
+    currentPlayTime.innerHTML = '0:00'
+    currentSongID = songsOrder[0]
 
-    AddSongBlockListeners();
+    systemPlayer.src = songsMetaData[currentSongID].url
+    systemPlayer.volume = currentVolumeData
 
-    currentPlayTime.innerHTML = '0:00';
-    currentSongID = songsOrder[0];
-    
-    systemPlayer.src = songsMetaData[currentSongID].url;
-    systemPlayer.volume = currentVolumeData;
-
-    songNameElem.innerHTML = songsMetaData[currentSongID].name;
-    authorElem.innerHTML = songsMetaData[currentSongID].author;
-    albumElem.innerHTML = songsMetaData[currentSongID].album;
-    bigCover.src = songsMetaData[currentSongID].cover_big;
-    songDuration.innerHTML = songsMetaData[currentSongID].duration;
-
-    songElemsArr[0].classList.add('active-song');
-    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
-};
+    songNameElem.innerHTML = songsMetaData[currentSongID].name
+    authorElem.innerHTML = songsMetaData[currentSongID].author
+    albumElem.innerHTML = songsMetaData[currentSongID].album
+    bigCover.src = songsMetaData[currentSongID].cover_big
+    songDuration.innerHTML = songsMetaData[currentSongID].duration
+}
 
 
 
@@ -224,19 +224,19 @@ function downloadSongOrder() {
 function PlaylistReplaceSong() {
     let newSongElements = document.getElementsByClassName('js-song-item'); 
     for (let i = 0; i < songsMetaData.length; i++) {
-        songsOrder[i] = newSongElements[i].dataset.songIndex;
+        songsOrder[i] = newSongElements[i].dataset.songId;
     }
 }
 
 
 
 // Создает HTML-разметку музыки
-function renderTracks() {
+function renderSongs() {
     const songList = document.querySelector('.js-songs-list')
 
     songsOrder.forEach(num => {
         songList.insertAdjacentHTML('beforeend', 
-            `<div class="audioplayer__songItem js-song-item" data-song-index="${num}"> \
+            `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
                 <div class="audioplayer__playingStatusIcon"> \
                     <img src="Images/Icons/list-play.png"> \
                 </div> \
@@ -249,6 +249,14 @@ function renderTracks() {
             </div>`
         )
     })
+
+    const songElemsArr = document.querySelectorAll('.js-song-item')
+    songElemsArr.forEach(song => {
+        song.addEventListener('click', SongBlockClick);
+        song.addEventListener('mousedown', startMoveSong); 
+    })
+    songElemsArr[0].classList.add('active-song');
+    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
 }
 
 
@@ -310,27 +318,13 @@ function SetPositionMode() {
     if (position == 'absolute' || position == 'relative' || position == 'fixed') playerPosition = 1;
 }
 
-
-
-function AddSongBlockListeners() {
-    songElemsArr.forEach(song => {
-        // обработка клика по песне
-        song.addEventListener('click', SongBlockClick);
-
-        // обработка перетаскивания песни 
-        song.addEventListener('mousedown', startMoveSong); 
-    })
-}
-
-
-
 // Обрабатывает клик на песню
 function SongBlockClick() {
     // если кликнутая песня не та, которую мы сейчас слушаем - переключаем песню
     if (!this.classList.contains('active-song')) {
         songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
         songList.querySelector('.active-song').classList.remove('active-song');
-        currentSongID = this.dataset.songIndex;
+        currentSongID = this.dataset.songId;
         playPauseImg.src = 'Images/Icons/pause.svg';
 
         GetCurrentSongPosition();
