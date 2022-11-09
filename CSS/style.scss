@@ -220,8 +220,7 @@ body {
         }
     }
 
-    // .audioplayer__activeSong
-    &__activeSong &__playingStatusIcon{
+    .active-song &__playingStatusIcon{
         opacity: 1;
     }
 

@@ -1,68 +1,54 @@
-let audioplayer = document.querySelector('#audioplayer'); // Системный аудиоплеер
-let audioplayerBlock = document.querySelector('.js-audioplayer'); // Блок аудиоплеера
-let apSongList = document.querySelector('.js-songs-list'); // Плейлист
-let apSongs; // Массив блоков с песнями
-let apProgressBarWrapper = document.querySelector('.js-progress-bar-wrapper'); // Общий прогрессбар песни
-let apCurrentProgress = document.querySelector(".js-song-progress"); // Полоска текущего прогресса песни
-let apPlayButton = document.querySelector('.js-play-pause-button'); // Кнопка Play/Pause
-let apPrevButton = document.querySelector('.js-prev-button'); // Кнопка следующей песни
-let apNextButton = document.querySelector('.js-next-button'); // Кнопка предыдущей песни
-let apImgPlayPause = document.querySelector('.js-play-pause-img') // Для управления изображением кнопки Play/Pause
-let apImagePreview = document.querySelector('.js-song-image'); // Большое изображение песни в плеере
-let apDuration = document.querySelector('.js-song-duration');  // Данные о продолжительности песни в плеере
-let apCurrentTime = document.querySelector('.js-play-time'); // Данные о текущем времени проигрывания песни в плеере
-let apName = document.querySelector('.js-song-name'); // Данные о названии песни в плеере
-let apAuthor = document.querySelector('.js-song-author'); // Данные об авторе песни в плеере
-let apAlbum = document.querySelector('.js-song-album'); // Данные об альбоме песни в плеере
-let apRepeatButton = document.querySelector('.js-repeat'); // Кнопка включения/выключения повтора песни
-let apVolumeButton = document.querySelector('.js-volume-icon'); // Кнопка выключения/включения звука
-let apVolumeBarWrapper = document.querySelector('.js-volume-bar-wrapper'); // Общая полоска громкости
-let apCurrentVolume = document.querySelector('.js-current-volume'); // Полоска текущей громкости
+let systemPlayer = document.querySelector('#audioplayer')
+let audioplayer = document.querySelector('.js-audioplayer')
+let songList = document.querySelector('.js-songs-list')
+let progressBar = document.querySelector('.js-progress-bar')
+let songProgress = document.querySelector(".js-song-progress")
+let playPauseButton = document.querySelector('.js-play-pause-button')
+let prevSongButton = document.querySelector('.js-prev-button')
+let nextSongButton = document.querySelector('.js-next-button')
+let playPauseImg = document.querySelector('.js-play-pause-img')
+let bigCover = document.querySelector('.js-big-cover')
+let songDuration = document.querySelector('.js-song-duration')
+let currentPlayTime = document.querySelector('.js-play-time')
+let songNameElem = document.querySelector('.js-song-name')
+let authorElem = document.querySelector('.js-song-author')
+let albumElem = document.querySelector('.js-song-album')
+let repeatButton = document.querySelector('.js-repeat')
+let volumeButton = document.querySelector('.js-volume-icon')
+let volumeBar = document.querySelector('.js-volume-bar-wrapper')
+let currentVolume = document.querySelector('.js-current-volume')
+let songShadow
 
-let apProgressTime; // Определяет состояние прогрессбара песни
-let apIsChangingTime = false; // Указывает, перематывается ли трек на данный момент
-let apIsRepeat = false; // Определяет, включен ли повтор песни
-let apCurrentVolumeData; // Текущее значение громкости. При выключении звука будет сохранять текущую громкость
-let apIsMuted = false; // Определяет, выключен ли звук или нет
-let apSongShadow = 0; // Замена блока пока он перемещается
-let apIsSongMoving = false; // Указывает, перемещается ли песня или нет
-let songsOrder = []; // Для хранения данных о текущей очередности песен
-let apSongID = 0; // Номер текущей песни в songsMetaData
-let apCurrentSongPos = 0; // Определяет какой по счету трек должен играть
-let apWaitMovingEnd = false; // Указывает на то, что какой-либо трек в данный момент перемещается
-let apPositionMode = 0; // Позиционирование плеера. Нужно для корректных рассчетов перемещения элементов
+let playerPosition
+let songsOrder = []
+let songElemsArr = []
+let currentVolumeData = 0.5
+let currentSongID
+let newCurrentPlaytime
+let currentSongNumber = 0
 
-apPlayButton.addEventListener("click", setPlayPause); // Кнопка Play/Pause
-apPrevButton.addEventListener("click", () => switchSong('prev')); // Кнопка предыдущей песни
-apNextButton.addEventListener('click', () => switchSong('next')); // Кнопка следующей песни
-apVolumeButton.addEventListener('click', toggleVolume); // Кнопка включения/выключения звука
-apRepeatButton.addEventListener('click', setRepeat); // Кнопка повтора песни
-audioplayer.addEventListener('timeupdate', UpdateTimeAndBar); // Когда обновляется время плеера
-apProgressBarWrapper.addEventListener('mousedown', startFastForward); // Клик по прогрессбару песни для перемотки
-apVolumeBarWrapper.addEventListener('mousedown', startChangeVolume); // Когда пользователь кликает по полоске громкости
+let isSongMove
+let isSongRewinds
+let isRepeat
+let isMuted
+let waitEndMove
 
-audioplayer.addEventListener('play', setPlayState);
-audioplayer.addEventListener('pause', setPauseState);
-audioplayer.addEventListener('ended', songEndedHandler);
+playPauseButton.addEventListener("click", setPlayPause)
+prevSongButton.addEventListener("click", () => switchSong('prev'))
+nextSongButton.addEventListener('click', () => switchSong('next'))
+volumeButton.addEventListener('click', toggleVolume)
+repeatButton.addEventListener('click', setRepeat)
+systemPlayer.addEventListener('timeupdate', UpdateTimeAndBar)
+progressBar.addEventListener('mousedown', startFastForward)
+volumeBar.addEventListener('mousedown', startChangeVolume)
+systemPlayer.addEventListener('play', setPlayState);
+systemPlayer.addEventListener('pause', setPauseState);
+systemPlayer.addEventListener('ended', songEndedHandler);
 navigator.mediaSession.setActionHandler('previoustrack', () => switchSong('prev'));
 navigator.mediaSession.setActionHandler('nexttrack', () => switchSong('next'));
 navigator.mediaSession.setActionHandler('play', setPlayPause);
 navigator.mediaSession.setActionHandler('pause', setPlayPause);
 
-function songEndedHandler() {
-    if (!apIsSongMoving) {
-        if (!apIsRepeat) {
-            apSongList.querySelector('.audioplayer__activeSong img').src = 'Images/Icons/list-play.png';
-            apSongList.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
-            
-            apCurrentSongPos < songsMetaData.length - 1 ? apCurrentSongPos++ : apCurrentSongPos = 0;
-            changeCurrentSongData();
-        }
-        audioplayer.play();
-    } else {
-        apWaitMovingEnd = true;
-    }
-}
 
 /*  
     Содержит данные о переносимой песне:
@@ -203,26 +189,24 @@ function FirstSongDataInit() {
     CheckMetaDataChanging();
 
     renderTracks()
-    apSongs = document.querySelectorAll('.js-song-item')
+    songElemsArr = document.querySelectorAll('.js-song-item')
 
     AddSongBlockListeners();
 
+    currentPlayTime.innerHTML = '0:00';
+    currentSongID = songsOrder[0];
     
-    apCurrentVolumeData = 0.5;
-    apCurrentTime.innerHTML = '0:00';
-    apSongID = songsOrder[apCurrentSongPos];
-    
-    audioplayer.src = songsMetaData[apSongID].url;
-    audioplayer.volume = apCurrentVolumeData;
+    systemPlayer.src = songsMetaData[currentSongID].url;
+    systemPlayer.volume = currentVolumeData;
 
-    apName.innerHTML = songsMetaData[apSongID].name;
-    apAuthor.innerHTML = songsMetaData[apSongID].author;
-    apAlbum.innerHTML = songsMetaData[apSongID].album;
-    apImagePreview.src = songsMetaData[apSongID].cover_big;
-    apDuration.innerHTML = songsMetaData[apSongID].duration;
+    songNameElem.innerHTML = songsMetaData[currentSongID].name;
+    authorElem.innerHTML = songsMetaData[currentSongID].author;
+    albumElem.innerHTML = songsMetaData[currentSongID].album;
+    bigCover.src = songsMetaData[currentSongID].cover_big;
+    songDuration.innerHTML = songsMetaData[currentSongID].duration;
 
-    apSongs[apCurrentSongPos].classList.add('audioplayer__activeSong');
-    apSongs[apCurrentSongPos].querySelector('img').src = 'Images/Icons/now-playing.png';
+    songElemsArr[0].classList.add('active-song');
+    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
 };
 
 
@@ -298,7 +282,7 @@ function CheckMetaDataChanging() {
 // Определяет позицию песни в плейлисте
 function GetCurrentSongPosition() {
     for (let i = 0; i < songsMetaData.length; i++) {
-        if (songsOrder[i] == apSongID) apCurrentSongPos = i;
+        if (songsOrder[i] == currentSongID) currentSongNumber = i;
     }
 }
 
@@ -310,10 +294,10 @@ function CheckPartOfSongBlock(e) {
         let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.js-song-item');
         if (!songMouseIsOver) return;
         
-        if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 8)) songMouseIsOver.after(apSongShadow);
-        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top > (songMouseIsOver.offsetHeight / 8 * 7)) songMouseIsOver.before(apSongShadow);
-        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 2)) songMouseIsOver.before(apSongShadow);
-        else songMouseIsOver.after(apSongShadow);
+        if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 8)) songMouseIsOver.after(songShadow);
+        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top > (songMouseIsOver.offsetHeight / 8 * 7)) songMouseIsOver.before(songShadow);
+        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 2)) songMouseIsOver.before(songShadow);
+        else songMouseIsOver.after(songShadow);
     }
 }
 
@@ -322,14 +306,14 @@ function CheckPartOfSongBlock(e) {
 // Определяет позиционирование аудиоплеера
 function SetPositionMode() {
     let position;
-    position = window.getComputedStyle(audioplayerBlock).position;
-    if (position == 'absolute' || position == 'relative' || position == 'fixed') apPositionMode = 1;
+    position = window.getComputedStyle(audioplayer).position;
+    if (position == 'absolute' || position == 'relative' || position == 'fixed') playerPosition = 1;
 }
 
 
 
 function AddSongBlockListeners() {
-    apSongs.forEach(song => {
+    songElemsArr.forEach(song => {
         // обработка клика по песне
         song.addEventListener('click', SongBlockClick);
 
@@ -343,11 +327,11 @@ function AddSongBlockListeners() {
 // Обрабатывает клик на песню
 function SongBlockClick() {
     // если кликнутая песня не та, которую мы сейчас слушаем - переключаем песню
-    if (!this.classList.contains('audioplayer__activeSong')) {
-        apSongList.querySelector('.audioplayer__activeSong img').src = 'Images/Icons/list-play.png';
-        apSongList.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
-        apSongID = this.dataset.songIndex;
-        apImgPlayPause.src = 'Images/Icons/pause.svg';
+    if (!this.classList.contains('active-song')) {
+        songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
+        songList.querySelector('.active-song').classList.remove('active-song');
+        currentSongID = this.dataset.songIndex;
+        playPauseImg.src = 'Images/Icons/pause.svg';
 
         GetCurrentSongPosition();
         changeCurrentSongData();
@@ -359,33 +343,33 @@ function SongBlockClick() {
 
 
 function changeCurrentSongData() {
-    audioplayer.currentTime = 0;
-    apCurrentProgress.style.width = 0;
+    systemPlayer.currentTime = 0;
+    songProgress.style.width = 0;
 
-    apSongID = songsOrder[apCurrentSongPos];
+    currentSongID = songsOrder[currentSongNumber];
 
-    audioplayer.src = songsMetaData[apSongID].url;
-    apImagePreview.src = songsMetaData[apSongID].cover_big;
-    apDuration.innerHTML = songsMetaData[apSongID].duration;
-    apName.innerHTML = songsMetaData[apSongID].name;
-    apAuthor.innerHTML = songsMetaData[apSongID].author;
-    apAlbum.innerHTML = songsMetaData[apSongID].album;
+    systemPlayer.src = songsMetaData[currentSongID].url;
+    bigCover.src = songsMetaData[currentSongID].cover_big;
+    songDuration.innerHTML = songsMetaData[currentSongID].duration;
+    songNameElem.innerHTML = songsMetaData[currentSongID].name;
+    authorElem.innerHTML = songsMetaData[currentSongID].author;
+    albumElem.innerHTML = songsMetaData[currentSongID].album;
 
-    apSongList.childNodes[apCurrentSongPos].classList.add('audioplayer__activeSong');
-    apSongList.childNodes[apCurrentSongPos].querySelector('img').src = 'Images/Icons/now-playing.png';
+    songList.childNodes[currentSongNumber].classList.add('active-song');
+    songList.childNodes[currentSongNumber].querySelector('img').src = 'Images/Icons/now-playing.png';
 }
 
 
 
 // Меняет данные прогрессбара песни и текущего времени её прослушивания
 function UpdateTimeAndBar() {
-    apCurrentTime.innerHTML = convertTime(audioplayer.currentTime);
+    currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime);
 
-    if (apIsChangingTime) return;
+    if (isSongRewinds) return;
 
-    let audioTime = Math.round(audioplayer.currentTime);
-    let audioLength = Math.round(audioplayer.duration);
-    apCurrentProgress.style.width = (audioTime * 100) / audioLength + '%';
+    let audioTime = Math.round(systemPlayer.currentTime);
+    let audioLength = Math.round(systemPlayer.duration);
+    songProgress.style.width = (audioTime * 100) / audioLength + '%';
 }
 
 
@@ -402,42 +386,60 @@ function convertTime(playingTime) {
 
 // Определяет, ставить ли песню на паузу или наоборот включить
 function setPlayPause(playPauseParam) {
-    if (audioplayer.paused || playPauseParam == 'play') {
-        audioplayer.play();
+    if (systemPlayer.paused || playPauseParam == 'play') {
+        systemPlayer.play();
     }
     else {
-        audioplayer.pause();
+        systemPlayer.pause();
     }
 }
 
 function setPlayState() {
-    apImgPlayPause.src = 'Images/Icons/pause.svg';
+    playPauseImg.src = 'Images/Icons/pause.svg';
 }
 
 function setPauseState() {
-    apImgPlayPause.src = 'Images/Icons/play.svg';
+    playPauseImg.src = 'Images/Icons/play.svg';
+}
+
+
+
+function songEndedHandler() {
+    if (!isSongMove) {
+        if (!isRepeat) {
+            songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
+            songList.querySelector('.active-song').classList.remove('active-song');
+            
+            currentSongNumber < songsMetaData.length - 1 ? currentSongNumber++ : currentSongNumber = 0;
+            changeCurrentSongData();
+        }
+        systemPlayer.play();
+    } else {
+        waitEndMove = true;
+    }
 }
 
 
 
 function switchSong(prevOrNext) {
-    if (!apIsSongMoving) {
-        apSongList.querySelector('.audioplayer__activeSong img').src = 'Images/Icons/list-play.png';
-        apSongList.querySelector('.audioplayer__activeSong').classList.remove('audioplayer__activeSong');
+    if (!isSongMove) {
+        songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
+        songList.querySelector('.active-song').classList.remove('active-song');
 
         if (prevOrNext == 'prev') {
-            apCurrentSongPos > 0 ? apCurrentSongPos-- : apCurrentSongPos = songsMetaData.length - 1;
+            currentSongNumber > 0 ? currentSongNumber-- : currentSongNumber = songsMetaData.length - 1;
         }
         else if (prevOrNext == 'next') {
-            apCurrentSongPos < songsMetaData.length - 1 ? apCurrentSongPos++ : apCurrentSongPos = 0;
+            console.log(currentSongNumber < songsMetaData.length - 1)
+            currentSongNumber < songsMetaData.length - 1 ? currentSongNumber++ : currentSongNumber = 0;
         }
 
         setRepeat('no');
-        if (audioplayer.paused) {
+        if (systemPlayer.paused) {
             changeCurrentSongData();
         } else {
             changeCurrentSongData();
-            audioplayer.play();
+            systemPlayer.play();
         }
     }
 }
@@ -446,7 +448,7 @@ function switchSong(prevOrNext) {
 
 // Перематывает песню
 function startFastForward(e) {
-    apIsChangingTime = true;
+    isSongRewinds = true;
     fastForward(e);
     document.addEventListener('mousemove', fastForward);
     document.addEventListener('mouseup', stopFastForward);
@@ -454,50 +456,50 @@ function startFastForward(e) {
 
 function fastForward(e) {
     let mouseX;
-    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apProgressBarWrapper.offsetLeft);
-    else mouseX = Math.floor(e.pageX - apProgressBarWrapper.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
+    if (!playerPosition) mouseX = Math.floor(e.pageX - progressBar.offsetLeft);
+    else mouseX = Math.floor(e.pageX - progressBar.offsetLeft - audioplayer.getBoundingClientRect().left);
 
-    apProgressTime = mouseX / (apProgressBarWrapper.offsetWidth / 100);
-    if (mouseX < 0) apCurrentProgress.style.width = '0%';
-    else if (mouseX > apProgressBarWrapper.offsetWidth) apCurrentProgress.style.width = '100%';
-    else apCurrentProgress.style.width = mouseX + 'px';
+    newCurrentPlaytime = mouseX / (progressBar.offsetWidth / 100);
+    if (mouseX < 0) songProgress.style.width = '0%';
+    else if (mouseX > progressBar.offsetWidth) songProgress.style.width = '100%';
+    else songProgress.style.width = mouseX + 'px';
 }
 
 function stopFastForward() {
     document.removeEventListener('mousemove', fastForward);
     document.removeEventListener('mouseup', stopFastForward);
-    audioplayer.currentTime = audioplayer.duration * (apProgressTime / 100);
-    apIsChangingTime = false;
+    systemPlayer.currentTime = systemPlayer.duration * (newCurrentPlaytime / 100);
+    isSongRewinds = false;
 }
 
 
 
 function setRepeat(isRepeat) {
-    if (apIsRepeat || isRepeat == 'no') {
-        apRepeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
-        apIsRepeat = false;
+    if (isRepeat || isRepeat == 'no') {
+        repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
+        isRepeat = false;
     }
     else {
-        apRepeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg';
-        apIsRepeat = true;
+        repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg';
+        isRepeat = true;
     }
 }
 
 
 
 function toggleVolume() {
-    if (!apIsMuted) {
-        audioplayer.volume = 0;
-        apCurrentVolume.style.width = 0;
+    if (!isMuted) {
+        systemPlayer.volume = 0;
+        currentVolume.style.width = 0;
         this.querySelector('img').src = 'Images/Icons/mute.svg';
-        apIsMuted = true;
+        isMuted = true;
     }
     else {
-        if (apCurrentVolumeData == 0) apCurrentVolumeData = 0.5;
-        audioplayer.volume = apCurrentVolumeData;
-        apCurrentVolume.style.width = apCurrentVolumeData * 100 + '%';
+        if (currentVolumeData == 0) currentVolumeData = 0.5;
+        systemPlayer.volume = currentVolumeData;
+        currentVolume.style.width = currentVolumeData * 100 + '%';
         this.querySelector('img').src = 'Images/Icons/volume.svg';
-        apIsMuted = false;
+        isMuted = false;
     }
 }
 
@@ -509,40 +511,36 @@ function startChangeVolume(e) {
     document.addEventListener('mouseup', stopChangeVolume);
 }
 
-// Изменяет громкость и меняет иконку громкости
 function changeVolume(e) {
     let mouseX;
-    if (apPositionMode == 0) mouseX = Math.floor(e.pageX - apVolumeBarWrapper.offsetLeft);
-    else mouseX = Math.floor(e.pageX - apVolumeBarWrapper.offsetLeft - audioplayerBlock.getBoundingClientRect().left);
+    if (!playerPosition) mouseX = Math.floor(e.pageX - volumeBar.offsetLeft);
+    else mouseX = Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left);
     
     if (mouseX < 0) { // если курсор левее полоски громкости - выключаем звук
-        apCurrentVolume.style.width = '0%';
-        apIsMuted = true;
-        apVolumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
+        currentVolume.style.width = '0%';
+        isMuted = true;
+        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
     }
-    else if (mouseX > apVolumeBarWrapper.offsetWidth) { // если правее - звук на 100%
-        apCurrentVolume.style.width = '100%';
-        apIsMuted = false;
-        apVolumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
+    else if (mouseX > volumeBar.offsetWidth) { // если правее - звук на 100%
+        currentVolume.style.width = '100%';
+        isMuted = false;
+        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
     }
     else { // если в пределах ширины полоски, измеряем нужное значение
-        apCurrentVolume.style.width = mouseX + 'px';
-        apIsMuted = false;
-        apVolumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
+        currentVolume.style.width = mouseX + 'px';
+        isMuted = false;
+        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
     }
 
-    audioplayer.volume = apCurrentVolume.offsetWidth / apVolumeBarWrapper.offsetWidth;
+    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth;
 }
 
 function stopChangeVolume() {
     document.removeEventListener('mousemove', changeVolume);
     document.removeEventListener('mouseup', stopChangeVolume);
-    apCurrentVolumeData = audioplayer.volume;
+    currentVolumeData = systemPlayer.volume;
 }
 
-
-
-// Логика захвата и перемещения песни
 
 function startMoveSong(e) {
     if (e.which != 1) return; // ничего не делаем, если ПКМ
@@ -560,7 +558,7 @@ function startMoveSong(e) {
 }
 
 function moveSong(e) {
-    if (!apIsSongMoving) { // если еще не двигали песню
+    if (!isSongMove) { // если еще не двигали песню
 
         // не передвигаем, если мышь передвинулась в нажатом состоянии недостаточно далеко
         if (Math.abs(e.pageX - movingSongData.downX) < 3 && Math.abs(e.pageY - movingSongData.downY) < 3) return;
@@ -572,32 +570,32 @@ function moveSong(e) {
         movingSongData.shiftY = movingSongData.downY - box.top;
 
         // определяем начальную позицию блока, который будем двигать, чтобы вернуть его на место если блок переместят в запрещенное место
-        for (let i = 0; i < apSongList.childNodes.length; i++) {
-            if (movingSongData.songBlock == apSongList.childNodes[i]) {
+        for (let i = 0; i < songList.childNodes.length; i++) {
+            if (movingSongData.songBlock == songList.childNodes[i]) {
                 apStartMoveBlockPos = i;
                 break;
             }
         }
 
         // делаем выбранный трек передвигаемым
-        apSongList.appendChild(movingSongData.songBlock);
+        songList.appendChild(movingSongData.songBlock);
         movingSongData.songBlock.classList.add('movable');
 
         // создаем клон блока, который показывает, куда будет перемещен блок если отпустить его
-        apSongShadow = document.createElement('div');
-        apSongShadow.classList.add('songShadow');
-        apSongList.childNodes[apStartMoveBlockPos].before(apSongShadow);
+        songShadow = document.createElement('div');
+        songShadow.classList.add('songShadow');
+        songList.childNodes[apStartMoveBlockPos].before(songShadow);
 
-        apIsSongMoving = true;
+        isSongMove = true;
     }
 
     // меняем координаты перемещаемой песни при каждом движении мыши
-    if (apPositionMode == 0) { // для position = static
+    if (!playerPosition) { // для position = static
         movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX + window.scrollX + 'px';
         movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY + window.scrollY + 'px';
     } else { // для position = relative/absolute/fixed
-        movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX - audioplayerBlock.getBoundingClientRect().left + 'px';
-        movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY - audioplayerBlock.getBoundingClientRect().top + 'px';
+        movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX - audioplayer.getBoundingClientRect().left + 'px';
+        movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY - audioplayer.getBoundingClientRect().top + 'px';
     }
 
     CheckPartOfSongBlock(e);
@@ -607,9 +605,9 @@ function endMoveSong() {
     document.removeEventListener('mousemove', moveSong);
     document.removeEventListener('mouseup', endMoveSong);
 
-    if (apIsSongMoving) {
-        apIsSongMoving = false;
-        apSongShadow.replaceWith(movingSongData.songBlock);
+    if (isSongMove) {
+        isSongMove = false;
+        songShadow.replaceWith(movingSongData.songBlock);
 
         PlaylistReplaceSong();
         uploadSongOrder();
@@ -622,8 +620,8 @@ function endMoveSong() {
         movingSongData = {};
     }
 
-    if (apWaitMovingEnd) {
-        apWaitMovingEnd = false;
+    if (waitEndMove) {
+        waitEndMove = false;
         songEndedHandler();
     }
 }

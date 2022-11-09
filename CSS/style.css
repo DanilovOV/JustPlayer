@@ -221,7 +221,7 @@ body {
   width: 20px;
   height: 20px;
 }
-.audioplayer__activeSong .audioplayer__playingStatusIcon {
+.active-song .audioplayer__playingStatusIcon {
   opacity: 1;
 }
 .audioplayer__itemMetaData {
