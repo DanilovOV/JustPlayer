@@ -196,6 +196,14 @@ function initAudioplayer() {
     CheckMetaDataChanging()
     renderSongs()
 
+    const songElemsArr = document.querySelectorAll('.js-song-item')
+    songElemsArr.forEach(song => {
+        song.addEventListener('click', SongBlockClick)
+        song.addEventListener('mousedown', startMoveSong)
+    })
+    songElemsArr[0].classList.add('active-song')
+    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
+
     currentPlayTime.innerHTML = '0:00'
     currentSongID = songsOrder[0]
 
@@ -249,15 +257,69 @@ function renderSongs() {
             </div>`
         )
     })
-
-    const songElemsArr = document.querySelectorAll('.js-song-item')
-    songElemsArr.forEach(song => {
-        song.addEventListener('click', SongBlockClick);
-        song.addEventListener('mousedown', startMoveSong); 
-    })
-    songElemsArr[0].classList.add('active-song');
-    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function makeSongActive(songElem) {
+    const songDataObj = findSongData(songElem)
+    if (!songDataObj) return
+
+    systemPlayer.src = songDataObj.url;
+    systemPlayer.currentTime = 0;
+    songProgress.style.width = 0;
+    setSongInfo()
+    setActiveStyles()
+
+    function setSongInfo() {
+        bigCover.src = songDataObj.cover_big;
+        songDuration.innerHTML = songDataObj.duration;
+        songNameElem.innerHTML = songDataObj.name;
+        authorElem.innerHTML = songDataObj.author;
+        albumElem.innerHTML = songDataObj.album;
+    }
+
+    function setActiveStyles() {  
+        songElem.classList.add('active-song')
+        songElem.querySelector('img').src = 'Images/Icons/now-playing.png';
+    }
+}
+
+function findSongData(songElem) {
+    if (!songElem) return
+    return songsMetaData[songElem.dataset.songId]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -315,7 +377,8 @@ function CheckPartOfSongBlock(e) {
 function SetPositionMode() {
     let position;
     position = window.getComputedStyle(audioplayer).position;
-    if (position == 'absolute' || position == 'relative' || position == 'fixed') playerPosition = 1;
+    if (position == 'absolute' || position == 'relative' || position == 'fixed') 
+        playerPosition = 1;
 }
 
 // Обрабатывает клик на песню
