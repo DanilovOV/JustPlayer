@@ -1,6 +1,6 @@
 let systemPlayer = document.querySelector('#audioplayer')
-systemPlayer.addEventListener('play', setPlayState)
-systemPlayer.addEventListener('pause', setPauseState)
+systemPlayer.addEventListener('play', startPlaying)
+systemPlayer.addEventListener('pause', stopPlaying)
 systemPlayer.addEventListener('ended', songEndedHandler)
 systemPlayer.addEventListener('timeupdate', updateSongProgress)
 
@@ -8,7 +8,7 @@ let progressBar = document.querySelector('.js-progress-bar')
 progressBar.addEventListener('mousedown', startFastForward)
 
 let playPauseButton = document.querySelector('.js-play-pause-button')
-playPauseButton.addEventListener("click", setPlayPause)
+playPauseButton.addEventListener("click", playPauseHandler)
 
 let prevSongButton = document.querySelector('.js-prev-button')
 prevSongButton.addEventListener("click", () => switchSong('prev'))
@@ -53,8 +53,8 @@ let waitEndMove
 
 navigator.mediaSession.setActionHandler('previoustrack', () => switchSong('prev'));
 navigator.mediaSession.setActionHandler('nexttrack', () => switchSong('next'));
-navigator.mediaSession.setActionHandler('play', setPlayPause);
-navigator.mediaSession.setActionHandler('pause', setPlayPause);
+navigator.mediaSession.setActionHandler('play', playPauseHandler);
+navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
 /*  
@@ -307,7 +307,7 @@ function makeSongActive(songElem) {
         songElem.querySelector('img').src = 'Images/Icons/now-playing.png'
     }
 
-    activeSong && setPlayPause('play')
+    activeSong && startPlaying()
     activeSong = songElem
 }
 
@@ -388,7 +388,7 @@ function SongBlockClick() {
     activeSong = this;
 
     this.classList.contains('active-song')
-        ? setPlayPause()
+        ? playPauseHandler()
         : makeSongActive(activeSong, 'playSong')
 }
 
@@ -405,22 +405,24 @@ function updateSongProgress() {
 
 
 
-function setPlayPause(param) {
-    if (systemPlayer.paused || param == 'play') {
-        playPauseImg.src = 'Images/Icons/pause.svg';
-        systemPlayer.play();
-    } else {
-        playPauseImg.src = 'Images/Icons/play.svg';
-        systemPlayer.pause();
-    }
+function playPauseHandler() {
+    systemPlayer.paused
+        ? startPlaying()
+        : stopPlaying()
 }
 
-function setPlayState() {
+function startPlaying() {
+    if (!systemPlayer.paused) return
+
     playPauseImg.src = 'Images/Icons/pause.svg';
+    systemPlayer.play();
 }
 
-function setPauseState() {
+function stopPlaying() {
+    if (systemPlayer.paused) return
+
     playPauseImg.src = 'Images/Icons/play.svg';
+    systemPlayer.pause();
 }
 
 
