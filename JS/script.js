@@ -2,7 +2,7 @@ let systemPlayer = document.querySelector('#audioplayer')
 systemPlayer.addEventListener('play', setPlayState)
 systemPlayer.addEventListener('pause', setPauseState)
 systemPlayer.addEventListener('ended', songEndedHandler)
-systemPlayer.addEventListener('timeupdate', UpdateTimeAndBar)
+systemPlayer.addEventListener('timeupdate', updateSongProgress)
 
 let progressBar = document.querySelector('.js-progress-bar')
 progressBar.addEventListener('mousedown', startFastForward)
@@ -196,7 +196,6 @@ function initAudioplayer() {
     renderSongs()
     addSongsListeners()
 
-    currentPlayTime.innerHTML = '0:00'
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
     makeSongActive(startSong)
 }
@@ -285,7 +284,6 @@ function makeSongActive(songElem) {
     const thisSongData = songsMetaData[songElem.dataset.songId]
 
     systemPlayer.src = thisSongData.url;
-    systemPlayer.currentTime = 0;
     songProgress.style.width = 0;
     setSongInfo()
     replaceActiveSongStyles()
@@ -395,7 +393,7 @@ function SongBlockClick() {
 }
 
 
-function UpdateTimeAndBar() {
+function updateSongProgress() {
     currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime);
 
     if (isSongRewinds) return;
