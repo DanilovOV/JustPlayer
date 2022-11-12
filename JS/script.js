@@ -17,7 +17,7 @@ let nextSongButton = document.querySelector('.js-next-button')
 nextSongButton.addEventListener('click', () => switchSong('next'))
 
 let repeatButton = document.querySelector('.js-repeat')
-repeatButton.addEventListener('click', setRepeat)
+repeatButton.addEventListener('click', toggleRepeat)
 
 let volumeButton = document.querySelector('.js-volume-icon')
 volumeButton.addEventListener('click', toggleVolume)
@@ -441,22 +441,30 @@ function songEndedHandler() {
 function switchSong(prevOrNext) {
     if (isSongMove) return
 
-    setRepeat('no');
+    disableRepeat();
     (prevOrNext == 'prev')
         ? setPrevSongActive(activeSong)
         : setNextSongActive(activeSong)
 }
 
 
-function setRepeat(param) {
-    if (isRepeat || param == 'no') {
-        repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
-        isRepeat = false;
-    }
-    else {
-        repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg';
-        isRepeat = true;
-    }
+
+function enableRepeat() {
+    if (isRepeat) return
+    repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg';
+    isRepeat = true;
+}
+
+function disableRepeat() {
+    if (!isRepeat) return
+    repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
+    isRepeat = false;
+}
+
+function toggleRepeat() {
+    isRepeat
+        ? disableRepeat()
+        : enableRepeat()
 }
 
 
