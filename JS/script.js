@@ -1,3 +1,69 @@
+class MoveSong {
+    static _song
+    static _downX
+    static _downY
+    static _moveMethod = this.move.bind(this)
+    static _endMethod = this.end.bind(this)
+
+    static start(e) {
+        if (e.which != 1) return
+        
+        this._song = e.currentTarget
+        this._downX = e.clientX
+        this._downY = e.clientY
+
+        document.addEventListener('mousemove', this._moveMethod)
+        document.addEventListener('mouseup', this._endMethod)
+    }
+
+    static move(e) {
+        if (!isSongMove) {
+            if (Math.abs(e.pageX - this._downX) < 3 &&
+                Math.abs(e.pageY - this._downY) < 3) return
+            
+            let box = this._song.getBoundingClientRect()
+    
+            this.shiftX = this._downX - box.left
+            this.shiftY = this._downY - box.top
+
+            const startPosition = songsOrder.findIndex(
+                songId => songId == MoveSong._song.dataset.songId)
+    
+            this._song.classList.add('movable')
+            songShadow = document.createElement('div')
+            songShadow.classList.add('songShadow')
+            songList.childNodes[startPosition].before(songShadow)
+    
+            isSongMove = true
+        }
+    
+        this._song.style.left = e.clientX - this.shiftX + 'px'
+        this._song.style.top = e.clientY - this.shiftY + 'px'
+    
+        CheckPartOfsong(e);
+    }
+
+    static end() {
+        document.removeEventListener('mousemove', this._moveMethod)
+        document.removeEventListener('mouseup', this._endMethod)
+
+        isSongMove = false
+        songShadow.replaceWith(this._song)
+    
+        overwriteSongsOrder()
+    
+        this._song.classList.remove('movable')
+        this._song.removeAttribute('style')
+    
+        if (waitEndMove) {
+            waitEndMove = false
+            songEndedHandler()
+        }
+    }
+}
+
+
+
 let systemPlayer = document.querySelector('#audioplayer')
 systemPlayer.addEventListener('play', startPlaying)
 systemPlayer.addEventListener('pause', stopPlaying)
@@ -56,13 +122,6 @@ navigator.mediaSession.setActionHandler('play', playPauseHandler);
 navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
-/*  
-    Содержит данные о переносимой песне:
-    songBlock - переносимая песня
-    downX / downY - координаты, на которых был mousedown, 
-    shiftX / shiftY - относительный сдвиг курсора от угла блока песни
-*/
-let movingSongData = {};
 
 let songsMetaData = [
     {
@@ -272,8 +331,8 @@ function renderSongs() {
 
 function addSongsListeners() {
     document.querySelectorAll('.js-song-item').forEach(song => {
-        song.addEventListener('click', SongBlockClick)
-        song.addEventListener('mousedown', startMoveSong)
+        song.addEventListener('click', songClick)
+        song.addEventListener('mousedown', MoveSong.start.bind(MoveSong))
     })
 }
 
@@ -367,7 +426,7 @@ function convertTime(playingTime) {
 
 
 
-function CheckPartOfSongBlock(e) {
+function CheckPartOfsong(e) {
     if (e.clientX > 0 && e.clientX < window.screen.availWidth && e.clientY > 0 && e.clientY < window.screen.availHeight) {
         let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.js-song-item');
         if (!songMouseIsOver) return;
@@ -381,10 +440,7 @@ function CheckPartOfSongBlock(e) {
 
 
 
-
-
-// Обрабатывает клик на песню
-function SongBlockClick() {
+function songClick() {
     activeSong = this;
 
     this.classList.contains('active-song')
@@ -429,10 +485,10 @@ function stopPlaying() {
 
 function songEndedHandler() {
     if (!isSongMove) {
-        if (!isRepeat) setNextSongActive(activeSong)
-        systemPlayer.play();
+        isRepeat || setNextSongActive(activeSong)
+        systemPlayer.play()
     } else {
-        waitEndMove = true;
+        waitEndMove = true
     }
 }
 
@@ -502,103 +558,19 @@ function changePlayerVolume(mouseOffsetX) {
     prevPlayerVolume = systemPlayer.volume
 }
 
-
-
-function startMoveSong(e) {
-    if (e.which != 1) return; // ничего не делаем, если ПКМ
-
-    movingSongData.songBlock = this;
-
-    // координаты, на которых мы нажали на блок pageX/pageY
-    // по ним потом будем определять, достаточно ли сдвинули блок для активации перемещения
-    movingSongData.downX = e.clientX;
-    movingSongData.downY = e.clientY;
-
-    document.addEventListener('mousemove', moveSong);
-    document.addEventListener('mouseup', endMoveSong);
-}
-
-function moveSong(e) {
-    if (!isSongMove) { // если еще не двигали песню
-
-        // не передвигаем, если мышь передвинулась в нажатом состоянии недостаточно далеко
-        if (Math.abs(e.pageX - movingSongData.downX) < 3 && Math.abs(e.pageY - movingSongData.downY) < 3) return;
-        
-        // смещение блока относительно курсора
-        let box = movingSongData.songBlock.getBoundingClientRect();
-
-        movingSongData.shiftX = movingSongData.downX - box.left;
-        movingSongData.shiftY = movingSongData.downY - box.top;
-
-        // определяем начальную позицию блока, который будем двигать, чтобы вернуть его на место если блок переместят в запрещенное место
-        for (let i = 0; i < songList.childNodes.length; i++) {
-            if (movingSongData.songBlock == songList.childNodes[i]) {
-                apStartMoveBlockPos = i;
-                break;
-            }
-        }
-
-        // делаем выбранный трек передвигаемым
-        songList.appendChild(movingSongData.songBlock);
-        movingSongData.songBlock.classList.add('movable');
-
-        // создаем клон блока, который показывает, куда будет перемещен блок если отпустить его
-        songShadow = document.createElement('div');
-        songShadow.classList.add('songShadow');
-        songList.childNodes[apStartMoveBlockPos].before(songShadow);
-
-        isSongMove = true;
-    }
-
-    // меняем координаты перемещаемой песни при каждом движении мыши
-    if (!playerPosition) { // для position = static
-        movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX + window.scrollX + 'px';
-        movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY + window.scrollY + 'px';
-    } else { // для position = relative/absolute/fixed
-        movingSongData.songBlock.style.left = e.clientX - movingSongData.shiftX - audioplayer.getBoundingClientRect().left + 'px';
-        movingSongData.songBlock.style.top = e.clientY - movingSongData.shiftY - audioplayer.getBoundingClientRect().top + 'px';
-    }
-
-    CheckPartOfSongBlock(e);
-}
-
-function endMoveSong() {
-    document.removeEventListener('mousemove', moveSong);
-    document.removeEventListener('mouseup', endMoveSong);
-
-    if (isSongMove) {
-        isSongMove = false;
-        songShadow.replaceWith(movingSongData.songBlock);
-
-        overwriteSongsOrder()
-
-        movingSongData.songBlock.classList.remove('movable');
-        movingSongData.songBlock.style.left = 'auto';
-        movingSongData.songBlock.style.top = 'auto';
-        movingSongData = {};
-    }
-
-    if (waitEndMove) {
-        waitEndMove = false;
-        songEndedHandler();
-    }
-}
-
 function overwriteSongsOrder() {
-    let newSongElements = document.getElementsByClassName('js-song-item'); 
-    for (let i = 0; i < songsMetaData.length; i++) {
-        songsOrder[i] = newSongElements[i].dataset.songId;
-    }
-    uploadSongOrder()
+    const newOrder = document.querySelectorAll('.js-song-item')
+    songsOrder = songsOrder.map(
+        (item, index) => item = newOrder[index].dataset.songId)
+
+    uploadSongsOrder()
 }
-
-
 
 function startFastForward(e) {
-    isSongRewinds = true;
-    fastForward(e);
-    document.addEventListener('mousemove', fastForward);
-    document.addEventListener('mouseup', stopFastForward);
+    isSongRewinds = true
+    fastForward(e)
+    document.addEventListener('mousemove', fastForward)
+    document.addEventListener('mouseup', stopFastForward)
 }
 
 function fastForward(e) {
@@ -652,12 +624,12 @@ function stopChangeVolume() {
 function resetSongsOrder() {
     songsOrder = [];
     for (let i = 0; i < songsMetaData.length; i++) songsOrder[i] = i;
-    uploadSongOrder();
+    uploadSongsOrder();
 }
 
 
 
-function uploadSongOrder() {
+function uploadSongsOrder() {
     localStorage.removeItem('playlist');
     localStorage.setItem('playlist', songsOrder);
 }
