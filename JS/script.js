@@ -39,9 +39,9 @@ let albumElem = document.querySelector('.js-song-album')
 let songShadow
 
 let playerPosition
+let activeSong
 let songsOrder = []
 let currentVolumeData = 0.5
-let currentSongID
 let newCurrentPlaytime
 let currentSongNumber = 0
 
@@ -189,37 +189,29 @@ let songsMetaData = [
 
 initAudioplayer()
 
-// Инициализируем данные о песнях при загрузке страницы
 function initAudioplayer() {
-    SetPositionMode()
+    checkPlayerPosition()
     downloadSongOrder()
-    CheckMetaDataChanging()
+    checkDataChange()
     renderSongs()
-
-    const songElemsArr = document.querySelectorAll('.js-song-item')
-    songElemsArr.forEach(song => {
-        song.addEventListener('click', SongBlockClick)
-        song.addEventListener('mousedown', startMoveSong)
-    })
-    songElemsArr[0].classList.add('active-song')
-    songElemsArr[0].querySelector('img').src = 'Images/Icons/now-playing.png';
+    addSongsListeners()
 
     currentPlayTime.innerHTML = '0:00'
-    currentSongID = songsOrder[0]
-
-    systemPlayer.src = songsMetaData[currentSongID].url
-    systemPlayer.volume = currentVolumeData
-
-    songNameElem.innerHTML = songsMetaData[currentSongID].name
-    authorElem.innerHTML = songsMetaData[currentSongID].author
-    albumElem.innerHTML = songsMetaData[currentSongID].album
-    bigCover.src = songsMetaData[currentSongID].cover_big
-    songDuration.innerHTML = songsMetaData[currentSongID].duration
+    const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
+    makeSongActive(startSong)
 }
 
 
 
-// Получает пользовательскую очередность песен из LocalStorage
+function checkPlayerPosition() {
+    let position;
+    position = window.getComputedStyle(audioplayer).position;
+    if (position == 'absolute' || position == 'relative' || position == 'fixed') 
+        playerPosition = 1;
+}
+
+
+
 function downloadSongOrder() {
     if (!localStorage.getItem('playlist')) {
         resetSongsOrder();
@@ -228,103 +220,9 @@ function downloadSongOrder() {
     songsOrder = localStorage.getItem('playlist').split(',');
 }
 
-// Перезаписывает очередность песен
-function PlaylistReplaceSong() {
-    let newSongElements = document.getElementsByClassName('js-song-item'); 
-    for (let i = 0; i < songsMetaData.length; i++) {
-        songsOrder[i] = newSongElements[i].dataset.songId;
-    }
-}
 
 
-
-// Создает HTML-разметку музыки
-function renderSongs() {
-    const songList = document.querySelector('.js-songs-list')
-
-    songsOrder.forEach(num => {
-        songList.insertAdjacentHTML('beforeend', 
-            `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
-                <div class="audioplayer__playingStatusIcon"> \
-                    <img src="Images/Icons/list-play.png"> \
-                </div> \
-                <div class="audioplayer__itemMetaData"> \
-                    <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
-                    <span class="audioplayer__itemAuthorAlbum">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
-                </div> \
-                <img src="${songsMetaData[num].cover_small}" class="audioplayer__smallCover"> \
-                <div class="audioplayer__itemDuration">${songsMetaData[num].duration}</div> \
-            </div>`
-        )
-    })
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function makeSongActive(songElem) {
-    const songDataObj = findSongData(songElem)
-    if (!songDataObj) return
-
-    systemPlayer.src = songDataObj.url;
-    systemPlayer.currentTime = 0;
-    songProgress.style.width = 0;
-    setSongInfo()
-    setActiveStyles()
-
-    function setSongInfo() {
-        bigCover.src = songDataObj.cover_big;
-        songDuration.innerHTML = songDataObj.duration;
-        songNameElem.innerHTML = songDataObj.name;
-        authorElem.innerHTML = songDataObj.author;
-        albumElem.innerHTML = songDataObj.album;
-    }
-
-    function setActiveStyles() {  
-        songElem.classList.add('active-song')
-        songElem.querySelector('img').src = 'Images/Icons/now-playing.png';
-    }
-}
-
-function findSongData(songElem) {
-    if (!songElem) return
-    return songsMetaData[songElem.dataset.songId]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Проверяет количество песен в массиве метаданных
-function CheckMetaDataChanging() {
+function checkDataChange() {
     // если песен стало меньше, обнуляем плейлист
     if (songsOrder.length > songsMetaData.length) {
         resetSongsOrder();
@@ -349,16 +247,128 @@ function CheckMetaDataChanging() {
 
 
 
-// Определяет позицию песни в плейлисте
-function GetCurrentSongPosition() {
-    for (let i = 0; i < songsMetaData.length; i++) {
-        if (songsOrder[i] == currentSongID) currentSongNumber = i;
-    }
+
+
+function renderSongs() {
+    const songList = document.querySelector('.js-songs-list')
+
+    songsOrder.forEach(num => {
+        songList.insertAdjacentHTML('beforeend', 
+            `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
+                <div class="audioplayer__playingStatusIcon"> \
+                    <img src="Images/Icons/list-play.png"> \
+                </div> \
+                <div class="audioplayer__itemMetaData"> \
+                    <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
+                    <span class="audioplayer__itemAuthorAlbum">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
+                </div> \
+                <img src="${songsMetaData[num].cover_small}" class="audioplayer__smallCover"> \
+                <div class="audioplayer__itemDuration">${songsMetaData[num].duration}</div> \
+            </div>`
+        )
+    })
 }
 
 
 
-// Проверяет, на какую часть блока песни указывает курсор
+function addSongsListeners() {
+    document.querySelectorAll('.js-song-item').forEach(song => {
+        song.addEventListener('click', SongBlockClick)
+        song.addEventListener('mousedown', startMoveSong)
+    })
+}
+
+
+
+function makeSongActive(songElem) {
+    if (!songElem) return
+    const thisSongData = songsMetaData[songElem.dataset.songId]
+
+    systemPlayer.src = thisSongData.url;
+    systemPlayer.currentTime = 0;
+    songProgress.style.width = 0;
+    setSongInfo()
+    replaceActiveSongStyles()
+
+    function setSongInfo() {
+        bigCover.src = thisSongData.cover_big;
+        songDuration.innerHTML = thisSongData.duration;
+        songNameElem.innerHTML = thisSongData.name;
+        authorElem.innerHTML = thisSongData.author;
+        albumElem.innerHTML = thisSongData.album;
+    }
+
+    function replaceActiveSongStyles() {
+        const activeSong = songList.querySelector('.active-song')
+        if (activeSong) {
+            songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png'
+            songList.querySelector('.active-song').classList.remove('active-song')
+        }
+
+        songElem.classList.add('active-song')
+        songElem.querySelector('img').src = 'Images/Icons/now-playing.png'
+    }
+
+    activeSong && setPlayPause('play')
+    activeSong = songElem
+}
+
+function setNextSongActive(songElem) {
+    if (!songElem) return
+
+    const nextSong = document.querySelector(`[data-song-id="${getNextSongId(songElem)}"]`)
+    nextSong && makeSongActive(nextSong)
+}
+
+function setPrevSongActive(songElem) {
+    if (!songElem) return
+    const prevSong = document.querySelector(`[data-song-id="${getPrevSongId(songElem)}"]`)
+    prevSong && makeSongActive(prevSong)
+}
+
+function getIndexInOrder(songElem) {
+    if (!songElem) return
+
+    const index = songsOrder.findIndex(orderSongId => orderSongId == songElem.dataset.songId)
+    return index == -1
+        ? null
+        : index
+}
+
+function getPrevSongId(songElem) {
+    if (!songElem) return
+    
+    const activeSongIndex = getIndexInOrder(songElem)
+    
+    if (activeSongIndex && songsOrder.length > activeSongIndex) {
+        return activeSongIndex && songsOrder[activeSongIndex - 1]
+    } else {
+        return songsOrder[songsOrder.length - 1]
+    }
+}
+
+function getNextSongId(songElem) {
+    if (!songElem) return
+
+    const activeSongIndex = getIndexInOrder(songElem)
+    if (!activeSongIndex && activeSongIndex != 0) return
+
+    return (songsOrder.length - 1 > activeSongIndex)
+        ? songsOrder[activeSongIndex + 1]
+        : songsOrder[0]
+}
+
+
+
+function convertTime(playingTime) {
+    let mins = Math.floor(playingTime / 60);
+    let secs = Math.floor(playingTime) % 60;
+    if (secs < 10) secs = '0' + secs;
+    return (mins + ':' + secs);
+}
+
+
+
 function CheckPartOfSongBlock(e) {
     if (e.clientX > 0 && e.clientX < window.screen.availWidth && e.clientY > 0 && e.clientY < window.screen.availHeight) {
         let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.js-song-item');
@@ -373,52 +383,18 @@ function CheckPartOfSongBlock(e) {
 
 
 
-// Определяет позиционирование аудиоплеера
-function SetPositionMode() {
-    let position;
-    position = window.getComputedStyle(audioplayer).position;
-    if (position == 'absolute' || position == 'relative' || position == 'fixed') 
-        playerPosition = 1;
-}
+
 
 // Обрабатывает клик на песню
 function SongBlockClick() {
-    // если кликнутая песня не та, которую мы сейчас слушаем - переключаем песню
-    if (!this.classList.contains('active-song')) {
-        songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
-        songList.querySelector('.active-song').classList.remove('active-song');
-        currentSongID = this.dataset.songId;
-        playPauseImg.src = 'Images/Icons/pause.svg';
+    activeSong = this;
 
-        GetCurrentSongPosition();
-        changeCurrentSongData();
-        setPlayPause('play');
-    }
-    else setPlayPause();
+    this.classList.contains('active-song')
+        ? setPlayPause()
+        : makeSongActive(activeSong, 'playSong')
 }
 
 
-
-function changeCurrentSongData() {
-    systemPlayer.currentTime = 0;
-    songProgress.style.width = 0;
-
-    currentSongID = songsOrder[currentSongNumber];
-
-    systemPlayer.src = songsMetaData[currentSongID].url;
-    bigCover.src = songsMetaData[currentSongID].cover_big;
-    songDuration.innerHTML = songsMetaData[currentSongID].duration;
-    songNameElem.innerHTML = songsMetaData[currentSongID].name;
-    authorElem.innerHTML = songsMetaData[currentSongID].author;
-    albumElem.innerHTML = songsMetaData[currentSongID].album;
-
-    songList.childNodes[currentSongNumber].classList.add('active-song');
-    songList.childNodes[currentSongNumber].querySelector('img').src = 'Images/Icons/now-playing.png';
-}
-
-
-
-// Меняет данные прогрессбара песни и текущего времени её прослушивания
 function UpdateTimeAndBar() {
     currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime);
 
@@ -431,22 +407,12 @@ function UpdateTimeAndBar() {
 
 
 
-// Переводит время в секундах в формат m:ss
-function convertTime(playingTime) {
-    let mins = Math.floor(playingTime / 60);
-    let secs = Math.floor(playingTime) % 60;
-    if (secs < 10) secs = '0' + secs;
-    return (mins + ':' + secs);
-}
-
-
-
-// Определяет, ставить ли песню на паузу или наоборот включить
-function setPlayPause(playPauseParam) {
-    if (systemPlayer.paused || playPauseParam == 'play') {
+function setPlayPause(param) {
+    if (systemPlayer.paused || param == 'play') {
+        playPauseImg.src = 'Images/Icons/pause.svg';
         systemPlayer.play();
-    }
-    else {
+    } else {
+        playPauseImg.src = 'Images/Icons/play.svg';
         systemPlayer.pause();
     }
 }
@@ -463,13 +429,7 @@ function setPauseState() {
 
 function songEndedHandler() {
     if (!isSongMove) {
-        if (!isRepeat) {
-            songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
-            songList.querySelector('.active-song').classList.remove('active-song');
-            
-            currentSongNumber < songsMetaData.length - 1 ? currentSongNumber++ : currentSongNumber = 0;
-            changeCurrentSongData();
-        }
+        if (!isRepeat) setNextSongActive(activeSong)
         systemPlayer.play();
     } else {
         waitEndMove = true;
@@ -479,60 +439,17 @@ function songEndedHandler() {
 
 
 function switchSong(prevOrNext) {
-    if (!isSongMove) {
-        songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png';
-        songList.querySelector('.active-song').classList.remove('active-song');
+    if (isSongMove) return
 
-        if (prevOrNext == 'prev') {
-            currentSongNumber > 0 ? currentSongNumber-- : currentSongNumber = songsMetaData.length - 1;
-        }
-        else if (prevOrNext == 'next') {
-            console.log(currentSongNumber < songsMetaData.length - 1)
-            currentSongNumber < songsMetaData.length - 1 ? currentSongNumber++ : currentSongNumber = 0;
-        }
-
-        setRepeat('no');
-        if (systemPlayer.paused) {
-            changeCurrentSongData();
-        } else {
-            changeCurrentSongData();
-            systemPlayer.play();
-        }
-    }
+    setRepeat('no');
+    (prevOrNext == 'prev')
+        ? setPrevSongActive(activeSong)
+        : setNextSongActive(activeSong)
 }
 
 
-
-// Перематывает песню
-function startFastForward(e) {
-    isSongRewinds = true;
-    fastForward(e);
-    document.addEventListener('mousemove', fastForward);
-    document.addEventListener('mouseup', stopFastForward);
-}
-
-function fastForward(e) {
-    let mouseX;
-    if (!playerPosition) mouseX = Math.floor(e.pageX - progressBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - progressBar.offsetLeft - audioplayer.getBoundingClientRect().left);
-
-    newCurrentPlaytime = mouseX / (progressBar.offsetWidth / 100);
-    if (mouseX < 0) songProgress.style.width = '0%';
-    else if (mouseX > progressBar.offsetWidth) songProgress.style.width = '100%';
-    else songProgress.style.width = mouseX + 'px';
-}
-
-function stopFastForward() {
-    document.removeEventListener('mousemove', fastForward);
-    document.removeEventListener('mouseup', stopFastForward);
-    systemPlayer.currentTime = systemPlayer.duration * (newCurrentPlaytime / 100);
-    isSongRewinds = false;
-}
-
-
-
-function setRepeat(isRepeat) {
-    if (isRepeat || isRepeat == 'no') {
+function setRepeat(param) {
+    if (isRepeat || param == 'no') {
         repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
         isRepeat = false;
     }
@@ -562,48 +479,10 @@ function toggleVolume() {
 
 
 
-function startChangeVolume(e) {
-    changeVolume(e);
-    document.addEventListener('mousemove', changeVolume);
-    document.addEventListener('mouseup', stopChangeVolume);
-}
-
-function changeVolume(e) {
-    let mouseX;
-    if (!playerPosition) mouseX = Math.floor(e.pageX - volumeBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left);
-    
-    if (mouseX < 0) { // если курсор левее полоски громкости - выключаем звук
-        currentVolume.style.width = '0%';
-        isMuted = true;
-        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
-    }
-    else if (mouseX > volumeBar.offsetWidth) { // если правее - звук на 100%
-        currentVolume.style.width = '100%';
-        isMuted = false;
-        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
-    }
-    else { // если в пределах ширины полоски, измеряем нужное значение
-        currentVolume.style.width = mouseX + 'px';
-        isMuted = false;
-        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
-    }
-
-    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth;
-}
-
-function stopChangeVolume() {
-    document.removeEventListener('mousemove', changeVolume);
-    document.removeEventListener('mouseup', stopChangeVolume);
-    currentVolumeData = systemPlayer.volume;
-}
-
-
 function startMoveSong(e) {
     if (e.which != 1) return; // ничего не делаем, если ПКМ
 
-    // блок, на который мы нажали
-    movingSongData.songBlock = e.target.closest('.js-song-item');
+    movingSongData.songBlock = this;
 
     // координаты, на которых мы нажали на блок pageX/pageY
     // по ним потом будем определять, достаточно ли сдвинули блок для активации перемещения
@@ -666,11 +545,8 @@ function endMoveSong() {
         isSongMove = false;
         songShadow.replaceWith(movingSongData.songBlock);
 
-        PlaylistReplaceSong();
-        uploadSongOrder();
-        GetCurrentSongPosition();
+        overwriteSongsOrder()
 
-        // очищаем данные о перемещенной песне
         movingSongData.songBlock.classList.remove('movable');
         movingSongData.songBlock.style.left = 'auto';
         movingSongData.songBlock.style.top = 'auto';
@@ -683,14 +559,84 @@ function endMoveSong() {
     }
 }
 
+function overwriteSongsOrder() {
+    let newSongElements = document.getElementsByClassName('js-song-item'); 
+    for (let i = 0; i < songsMetaData.length; i++) {
+        songsOrder[i] = newSongElements[i].dataset.songId;
+    }
+    uploadSongOrder()
+}
 
 
-// Обнуляет пользовательскую очередность песен
+
+function startFastForward(e) {
+    isSongRewinds = true;
+    fastForward(e);
+    document.addEventListener('mousemove', fastForward);
+    document.addEventListener('mouseup', stopFastForward);
+}
+
+function fastForward(e) {
+    let mouseX;
+    if (!playerPosition) mouseX = Math.floor(e.pageX - progressBar.offsetLeft);
+    else mouseX = Math.floor(e.pageX - progressBar.offsetLeft - audioplayer.getBoundingClientRect().left);
+
+    newCurrentPlaytime = mouseX / (progressBar.offsetWidth / 100);
+    if (mouseX < 0) songProgress.style.width = '0%';
+    else if (mouseX > progressBar.offsetWidth) songProgress.style.width = '100%';
+    else songProgress.style.width = mouseX + 'px';
+}
+
+function stopFastForward() {
+    document.removeEventListener('mousemove', fastForward);
+    document.removeEventListener('mouseup', stopFastForward);
+    systemPlayer.currentTime = systemPlayer.duration * (newCurrentPlaytime / 100);
+    isSongRewinds = false;
+}
+
+
+
+function startChangeVolume(e) {
+    changeVolume(e);
+    document.addEventListener('mousemove', changeVolume);
+    document.addEventListener('mouseup', stopChangeVolume);
+}
+
+function changeVolume(e) {
+    let mouseX;
+    if (!playerPosition) mouseX = Math.floor(e.pageX - volumeBar.offsetLeft);
+    else mouseX = Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left);
+    
+    if (mouseX < 0) { // если курсор левее полоски громкости - выключаем звук
+        currentVolume.style.width = '0%';
+        isMuted = true;
+        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
+    }
+    else if (mouseX > volumeBar.offsetWidth) { // если правее - звук на 100%
+        currentVolume.style.width = '100%';
+        isMuted = false;
+        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
+    }
+    else { // если в пределах ширины полоски, измеряем нужное значение
+        currentVolume.style.width = mouseX + 'px';
+        isMuted = false;
+        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
+    }
+
+    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth;
+}
+
+function stopChangeVolume() {
+    document.removeEventListener('mousemove', changeVolume);
+    document.removeEventListener('mouseup', stopChangeVolume);
+    currentVolumeData = systemPlayer.volume;
+}
+
+
+
 function resetSongsOrder() {
     songsOrder = [];
-    for (let i = 0; i < songsMetaData.length; i++) {
-        songsOrder[i] = i;
-    }
+    for (let i = 0; i < songsMetaData.length; i++) songsOrder[i] = i;
     uploadSongOrder();
 }
 
