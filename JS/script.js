@@ -41,14 +41,13 @@ let songShadow
 let playerPosition
 let activeSong
 let songsOrder = []
-let currentVolumeData = 0.5
+let prevPlayerVolume
 let newCurrentPlaytime
 let currentSongNumber = 0
 
 let isSongMove
 let isSongRewinds
 let isRepeat
-let isMuted
 let waitEndMove
 
 navigator.mediaSession.setActionHandler('previoustrack', () => switchSong('prev'));
@@ -196,6 +195,7 @@ function initAudioplayer() {
     renderSongs()
     addSongsListeners()
 
+    systemPlayer.volume = prevPlayerVolume = 0.5
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
     makeSongActive(startSong)
 }
@@ -468,21 +468,38 @@ function toggleRepeat() {
 }
 
 
-
 function toggleVolume() {
-    if (!isMuted) {
-        systemPlayer.volume = 0;
-        currentVolume.style.width = 0;
-        this.querySelector('img').src = 'Images/Icons/mute.svg';
-        isMuted = true;
-    }
-    else {
-        if (currentVolumeData == 0) currentVolumeData = 0.5;
-        systemPlayer.volume = currentVolumeData;
-        currentVolume.style.width = currentVolumeData * 100 + '%';
-        this.querySelector('img').src = 'Images/Icons/volume.svg';
-        isMuted = false;
-    }
+    (systemPlayer.volume == 0)
+        ? unmutePlayer()
+        : mutePlayer()
+}
+
+function mutePlayer() {
+    if (!systemPlayer.volume) return
+
+    systemPlayer.volume = 0
+    currentVolume.style.width = 0
+    volumeButton.querySelector('img').src = 'Images/Icons/mute.svg'
+}
+
+function unmutePlayer() {
+    if (systemPlayer.volume) return
+
+    systemPlayer.volume = prevPlayerVolume || 0.5
+    currentVolume.style.width = systemPlayer.volume * 100 + '%'
+    volumeButton.querySelector('img').src = 'Images/Icons/volume.svg'
+    prevPlayerVolume = systemPlayer.volume
+}
+
+function changePlayerVolume(mouseOffsetX) {
+    unmutePlayer();
+
+    (mouseOffsetX > volumeBar.offsetWidth)
+        ? currentVolume.style.width = '100%'
+        : currentVolume.style.width = mouseOffsetX + 'px'
+
+    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth
+    prevPlayerVolume = systemPlayer.volume
 }
 
 
@@ -611,33 +628,23 @@ function startChangeVolume(e) {
 }
 
 function changeVolume(e) {
-    let mouseX;
-    if (!playerPosition) mouseX = Math.floor(e.pageX - volumeBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left);
-    
-    if (mouseX < 0) { // если курсор левее полоски громкости - выключаем звук
-        currentVolume.style.width = '0%';
-        isMuted = true;
-        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg';
-    }
-    else if (mouseX > volumeBar.offsetWidth) { // если правее - звук на 100%
-        currentVolume.style.width = '100%';
-        isMuted = false;
-        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
-    }
-    else { // если в пределах ширины полоски, измеряем нужное значение
-        currentVolume.style.width = mouseX + 'px';
-        isMuted = false;
-        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg';
-    }
+    let mouseOffsetX;
 
-    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth;
+    mouseOffsetX = playerPosition
+        ? Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left)
+        : Math.floor(e.pageX - volumeBar.offsetLeft);
+
+    if (mouseOffsetX > 0) {
+        changePlayerVolume(mouseOffsetX)
+    } else {
+        prevPlayerVolume = 0
+        mutePlayer()
+    }
 }
 
 function stopChangeVolume() {
     document.removeEventListener('mousemove', changeVolume);
     document.removeEventListener('mouseup', stopChangeVolume);
-    currentVolumeData = systemPlayer.volume;
 }
 
 
