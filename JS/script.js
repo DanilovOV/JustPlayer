@@ -3,6 +3,8 @@ class MoveSong {
     static _downX
     static _downY
     static _moveMethod = this.move.bind(this)
+    static isSongMoved
+    static songShadow
 
     static start(e) {
         if (e.which != 1) return
@@ -16,7 +18,7 @@ class MoveSong {
     }
 
     static move(e) {
-        if (!isSongMove) {
+        if (!this.isSongMoved) {
             if (Math.abs(e.pageX - this._downX) < 3 &&
                 Math.abs(e.pageY - this._downY) < 3) return
             
@@ -29,23 +31,23 @@ class MoveSong {
                 songId => songId == MoveSong._song.dataset.songId)
     
             this._song.classList.add('movable')
-            songShadow = document.createElement('div')
-            songShadow.classList.add('songShadow')
-            songList.childNodes[startPosition].before(songShadow)
+            this.songShadow = document.createElement('div')
+            this.songShadow.classList.add('songShadow')
+            songList.childNodes[startPosition].before(this.songShadow)
     
-            isSongMove = true
+            this.isSongMoved = true
         }
     
         this._song.style.left = e.clientX - this.shiftX + 'px'
         this._song.style.top = e.clientY - this.shiftY + 'px'
     
-        replaceShadow(e);
+        this.#replaceShadow(e);
     }
 
     static end() {
         document.removeEventListener('mousemove', this._moveMethod)
-        isSongMove = false
-        songShadow.replaceWith(this._song)
+        this.isSongMoved = false
+        this.songShadow.replaceWith(this._song)
     
         overwriteSongsOrder()
     
@@ -56,6 +58,49 @@ class MoveSong {
             waitEndMove = false
             songEndedHandler()
         }
+    }
+
+    static #replaceShadow(e) {
+        const target = e.target.closest('.js-song-item')
+        if (!target) return;
+        
+        const shiftY = e.clientY - target.getBoundingClientRect().top
+    
+        if (shiftY < (target.offsetHeight / 8)) target.after(this.songShadow) 
+        else if (shiftY > (target.offsetHeight / 8 * 7)) target.before(this.songShadow)
+        else if (shiftY < (target.offsetHeight / 2)) target.before(this.songShadow)
+        else target.after(this.songShadow)
+    }
+}
+
+
+
+class RewindSong {
+    static _barShiftX
+    static _rewindMethod = this.rewind.bind(this)
+
+    static start(e) {
+        isSongRewinds = true
+        this.rewind(e)
+        document.addEventListener('mousemove', this._rewindMethod)
+        document.addEventListener('mouseup', this.end.bind(this), {once: true})
+    }
+    
+    static rewind(e) {
+        this._barShiftX = e.clientX - progressBar.getBoundingClientRect().left
+    
+        if (this._barShiftX < 0) songProgress.style.width = '0%'
+        else if (this._barShiftX > progressBar.offsetWidth) songProgress.style.width = '100%'
+        else songProgress.style.width = this._barShiftX + 'px'
+    }
+    
+    static end() {
+        document.removeEventListener('mousemove', this._rewindMethod)
+        
+        systemPlayer.currentTime = systemPlayer.duration 
+            * ((this._barShiftX / (progressBar.offsetWidth / 100)) / 100)
+    
+        isSongRewinds = false
     }
 }
 
@@ -68,7 +113,7 @@ systemPlayer.addEventListener('ended', songEndedHandler)
 systemPlayer.addEventListener('timeupdate', updateSongProgress)
 
 let progressBar = document.querySelector('.js-progress-bar')
-progressBar.addEventListener('mousedown', startFastForward)
+progressBar.addEventListener('mousedown', RewindSong.start.bind(RewindSong))
 
 let playPauseButton = document.querySelector('.js-play-pause-button')
 playPauseButton.addEventListener("click", playPauseHandler)
@@ -99,16 +144,11 @@ let currentVolume = document.querySelector('.js-current-volume')
 let songNameElem = document.querySelector('.js-song-name')
 let authorElem = document.querySelector('.js-song-author')
 let albumElem = document.querySelector('.js-song-album')
-let songShadow
 
-let playerPosition
 let activeSong
 let songsOrder = []
 let prevPlayerVolume
-let newCurrentPlaytime
 let currentSongNumber = 0
-
-let isSongMove
 let isSongRewinds
 let isRepeat
 let waitEndMove
@@ -245,7 +285,6 @@ let songsMetaData = [
 initAudioplayer()
 
 function initAudioplayer() {
-    checkPlayerPosition()
     downloadSongOrder()
     checkDataChange()
     renderSongs()
@@ -254,15 +293,6 @@ function initAudioplayer() {
     systemPlayer.volume = prevPlayerVolume = 0.5
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
     makeSongActive(startSong)
-}
-
-
-
-function checkPlayerPosition() {
-    let position;
-    position = window.getComputedStyle(audioplayer).position;
-    if (position == 'absolute' || position == 'relative' || position == 'fixed') 
-        playerPosition = 1;
 }
 
 
@@ -423,20 +453,6 @@ function convertTime(playingTime) {
 
 
 
-function replaceShadow(e) {
-    const target = e.target.closest('.js-song-item')
-    if (!target) return;
-    
-    const shiftY = e.clientY - target.getBoundingClientRect().top
-
-    if (shiftY < (target.offsetHeight / 8)) target.after(songShadow) 
-    else if (shiftY > (target.offsetHeight / 8 * 7)) target.before(songShadow)
-    else if (shiftY < (target.offsetHeight / 2)) target.before(songShadow)
-    else target.after(songShadow)
-}
-
-
-
 function songClick() {
     activeSong = this;
 
@@ -451,10 +467,8 @@ function updateSongProgress() {
     currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime);
 
     if (isSongRewinds) return;
-
-    let audioTime = Math.round(systemPlayer.currentTime);
-    let audioLength = Math.round(systemPlayer.duration);
-    songProgress.style.width = (audioTime * 100) / audioLength + '%';
+    songProgress.style.width = systemPlayer.currentTime /
+        systemPlayer.duration * 100 + '%';
 }
 
 
@@ -482,7 +496,7 @@ function stopPlaying() {
 
 
 function songEndedHandler() {
-    if (!isSongMove) {
+    if (!MoveSong.isSongMoved) {
         isRepeat || setNextSongActive(activeSong)
         systemPlayer.play()
     } else {
@@ -493,7 +507,7 @@ function songEndedHandler() {
 
 
 function switchSong(prevOrNext) {
-    if (isSongMove) return
+    if (MoveSong.isSongMoved) return
 
     disableRepeat();
     (prevOrNext == 'prev')
@@ -539,10 +553,9 @@ function mutePlayer() {
 function unmutePlayer() {
     if (systemPlayer.volume) return
 
-    systemPlayer.volume = prevPlayerVolume || 0.5
+    systemPlayer.volume = prevPlayerVolume = prevPlayerVolume || 0.5
     currentVolume.style.width = systemPlayer.volume * 100 + '%'
     volumeButton.querySelector('img').src = 'Images/Icons/volume.svg'
-    prevPlayerVolume = systemPlayer.volume
 }
 
 function changePlayerVolume(mouseOffsetX) {
@@ -564,48 +577,20 @@ function overwriteSongsOrder() {
     uploadSongsOrder()
 }
 
-function startFastForward(e) {
-    isSongRewinds = true
-    fastForward(e)
-    document.addEventListener('mousemove', fastForward)
-    document.addEventListener('mouseup', stopFastForward)
-}
-
-function fastForward(e) {
-    let mouseX;
-    if (!playerPosition) mouseX = Math.floor(e.pageX - progressBar.offsetLeft);
-    else mouseX = Math.floor(e.pageX - progressBar.offsetLeft - audioplayer.getBoundingClientRect().left);
-
-    newCurrentPlaytime = mouseX / (progressBar.offsetWidth / 100);
-    if (mouseX < 0) songProgress.style.width = '0%';
-    else if (mouseX > progressBar.offsetWidth) songProgress.style.width = '100%';
-    else songProgress.style.width = mouseX + 'px';
-}
-
-function stopFastForward() {
-    document.removeEventListener('mousemove', fastForward);
-    document.removeEventListener('mouseup', stopFastForward);
-    systemPlayer.currentTime = systemPlayer.duration * (newCurrentPlaytime / 100);
-    isSongRewinds = false;
-}
 
 
 
 function startChangeVolume(e) {
     changeVolume(e);
     document.addEventListener('mousemove', changeVolume);
-    document.addEventListener('mouseup', stopChangeVolume);
+    document.addEventListener('mouseup', stopChangeVolume, {once: true});
 }
 
 function changeVolume(e) {
-    let mouseOffsetX;
+    const shiftX = e.clientX - volumeBar.getBoundingClientRect().left
 
-    mouseOffsetX = playerPosition
-        ? Math.floor(e.pageX - volumeBar.offsetLeft - audioplayer.getBoundingClientRect().left)
-        : Math.floor(e.pageX - volumeBar.offsetLeft);
-
-    if (mouseOffsetX > 0) {
-        changePlayerVolume(mouseOffsetX)
+    if (shiftX > 0) {
+        changePlayerVolume(shiftX)
     } else {
         prevPlayerVolume = 0
         mutePlayer()
@@ -614,7 +599,6 @@ function changeVolume(e) {
 
 function stopChangeVolume() {
     document.removeEventListener('mousemove', changeVolume);
-    document.removeEventListener('mouseup', stopChangeVolume);
 }
 
 
