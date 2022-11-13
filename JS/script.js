@@ -39,7 +39,7 @@ class MoveSong {
         this._song.style.left = e.clientX - this.shiftX + 'px'
         this._song.style.top = e.clientY - this.shiftY + 'px'
     
-        CheckPartOfsong(e);
+        replaceShadow(e);
     }
 
     static end() {
@@ -423,16 +423,16 @@ function convertTime(playingTime) {
 
 
 
-function CheckPartOfsong(e) {
-    if (e.clientX > 0 && e.clientX < window.screen.availWidth && e.clientY > 0 && e.clientY < window.screen.availHeight) {
-        let songMouseIsOver = document.elementFromPoint(e.clientX, e.clientY).closest('.js-song-item');
-        if (!songMouseIsOver) return;
-        
-        if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 8)) songMouseIsOver.after(songShadow);
-        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top > (songMouseIsOver.offsetHeight / 8 * 7)) songMouseIsOver.before(songShadow);
-        else if (e.clientY - songMouseIsOver.getBoundingClientRect().top < (songMouseIsOver.offsetHeight / 2)) songMouseIsOver.before(songShadow);
-        else songMouseIsOver.after(songShadow);
-    }
+function replaceShadow(e) {
+    const target = e.target.closest('.js-song-item')
+    if (!target) return;
+    
+    const shiftY = e.clientY - target.getBoundingClientRect().top
+
+    if (shiftY < (target.offsetHeight / 8)) target.after(songShadow) 
+    else if (shiftY > (target.offsetHeight / 8 * 7)) target.before(songShadow)
+    else if (shiftY < (target.offsetHeight / 2)) target.before(songShadow)
+    else target.after(songShadow)
 }
 
 
@@ -444,6 +444,7 @@ function songClick() {
         ? playPauseHandler()
         : makeSongActive(activeSong, 'playSong')
 }
+
 
 
 function updateSongProgress() {
