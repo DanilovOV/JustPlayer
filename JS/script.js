@@ -2,9 +2,9 @@ class MoveSong {
     static _song
     static _downX
     static _downY
-    static _moveMethod = this.move.bind(this)
     static isSongMoved
     static songShadow
+    static _moveMethod = this.move.bind(this)
 
     static start(e) {
         if (e.which != 1) return
@@ -46,6 +46,8 @@ class MoveSong {
 
     static end() {
         document.removeEventListener('mousemove', this._moveMethod)
+        if (!this.isSongMoved) return
+
         this.isSongMoved = false
         this.songShadow.replaceWith(this._song)
     
@@ -106,6 +108,67 @@ class RewindSong {
 
 
 
+class PlayerVolume {
+    static volumeBeforeMute = 0.5
+    static _changeMethod = this.change.bind(this)
+
+    static startChange(e) {
+        this.change(e)
+        document.addEventListener('mousemove', this._changeMethod)
+        document.addEventListener('mouseup', this.stopChange.bind(this), {once: true})
+    }
+    
+    static change(e) {
+        const shiftX = e.clientX - volumeBar.getBoundingClientRect().left
+    
+        if (shiftX > 0) {
+            this.setVolume(shiftX)
+        } else {
+            this.volumeBeforeMute = 0
+            this.mute()
+        }
+    }
+    
+    static stopChange() {
+        document.removeEventListener('mousemove', this._changeMethod)
+    }
+
+    static setVolume(mouseShiftX) {
+        this.unmute()
+    
+        currentVolume.style.width = mouseShiftX > volumeBar.offsetWidth
+            ? '100%'
+            : mouseShiftX + 'px'
+    
+        systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth
+        this.volumeBeforeMute = systemPlayer.volume
+    }
+
+    static toggleVolume() {
+        (systemPlayer.volume == 0)
+            ? this.unmute()
+            : this.mute()
+    }
+    
+    static mute() {
+        if (!systemPlayer.volume) return
+    
+        systemPlayer.volume = 0
+        currentVolume.style.width = 0
+        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg'
+    }
+    
+    static unmute() {
+        if (systemPlayer.volume) return
+    
+        systemPlayer.volume = this.volumeBeforeMute = this.volumeBeforeMute || 0.5
+        currentVolume.style.width = systemPlayer.volume * 100 + '%'
+        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg'
+    }
+}
+
+
+
 let systemPlayer = document.querySelector('#audioplayer')
 systemPlayer.addEventListener('play', startPlaying)
 systemPlayer.addEventListener('pause', stopPlaying)
@@ -128,10 +191,10 @@ let repeatButton = document.querySelector('.js-repeat')
 repeatButton.addEventListener('click', toggleRepeat)
 
 let volumeButton = document.querySelector('.js-volume-icon')
-volumeButton.addEventListener('click', toggleVolume)
+volumeButton.addEventListener('click', PlayerVolume.toggleVolume.bind(PlayerVolume))
 
 let volumeBar = document.querySelector('.js-volume-bar-wrapper')
-volumeBar.addEventListener('mousedown', startChangeVolume)
+volumeBar.addEventListener('mousedown', PlayerVolume.startChange.bind(PlayerVolume))
 
 let audioplayer = document.querySelector('.js-audioplayer')
 let songList = document.querySelector('.js-songs-list')
@@ -147,8 +210,6 @@ let albumElem = document.querySelector('.js-song-album')
 
 let activeSong
 let songsOrder = []
-let prevPlayerVolume
-let currentSongNumber = 0
 let isSongRewinds
 let isRepeat
 let waitEndMove
@@ -290,7 +351,7 @@ function initAudioplayer() {
     renderSongs()
     addSongsListeners()
 
-    systemPlayer.volume = prevPlayerVolume = 0.5
+    systemPlayer.volume = 0.5
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
     makeSongActive(startSong)
 }
@@ -535,70 +596,12 @@ function toggleRepeat() {
         : enableRepeat()
 }
 
-
-function toggleVolume() {
-    (systemPlayer.volume == 0)
-        ? unmutePlayer()
-        : mutePlayer()
-}
-
-function mutePlayer() {
-    if (!systemPlayer.volume) return
-
-    systemPlayer.volume = 0
-    currentVolume.style.width = 0
-    volumeButton.querySelector('img').src = 'Images/Icons/mute.svg'
-}
-
-function unmutePlayer() {
-    if (systemPlayer.volume) return
-
-    systemPlayer.volume = prevPlayerVolume = prevPlayerVolume || 0.5
-    currentVolume.style.width = systemPlayer.volume * 100 + '%'
-    volumeButton.querySelector('img').src = 'Images/Icons/volume.svg'
-}
-
-function changePlayerVolume(mouseOffsetX) {
-    unmutePlayer();
-
-    (mouseOffsetX > volumeBar.offsetWidth)
-        ? currentVolume.style.width = '100%'
-        : currentVolume.style.width = mouseOffsetX + 'px'
-
-    systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth
-    prevPlayerVolume = systemPlayer.volume
-}
-
 function overwriteSongsOrder() {
     const newOrder = document.querySelectorAll('.js-song-item')
     songsOrder = songsOrder.map(
         (item, index) => item = newOrder[index].dataset.songId)
 
     uploadSongsOrder()
-}
-
-
-
-
-function startChangeVolume(e) {
-    changeVolume(e);
-    document.addEventListener('mousemove', changeVolume);
-    document.addEventListener('mouseup', stopChangeVolume, {once: true});
-}
-
-function changeVolume(e) {
-    const shiftX = e.clientX - volumeBar.getBoundingClientRect().left
-
-    if (shiftX > 0) {
-        changePlayerVolume(shiftX)
-    } else {
-        prevPlayerVolume = 0
-        mutePlayer()
-    }
-}
-
-function stopChangeVolume() {
-    document.removeEventListener('mousemove', changeVolume);
 }
 
 
