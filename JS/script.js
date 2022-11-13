@@ -22,10 +22,10 @@ class MoveSong {
             if (Math.abs(e.pageX - this._downX) < 3 &&
                 Math.abs(e.pageY - this._downY) < 3) return
             
-            let box = this._song.getBoundingClientRect()
+            let songBlockOffset = this._song.getBoundingClientRect()
     
-            this.shiftX = this._downX - box.left
-            this.shiftY = this._downY - box.top
+            this.shiftX = this._downX - songBlockOffset.left
+            this.shiftY = this._downY - songBlockOffset.top
 
             const startPosition = songsOrder.findIndex(
                 songId => songId == MoveSong._song.dataset.songId)
@@ -50,9 +50,10 @@ class MoveSong {
 
         this.isSongMoved = false
         this.songShadow.replaceWith(this._song)
-    
-        overwriteSongsOrder()
-    
+        
+        songsOrder = getNewSongsOrder()
+        uploadSongsOrder(songsOrder)
+
         this._song.classList.remove('movable')
         this._song.removeAttribute('style')
     
@@ -359,34 +360,32 @@ function initAudioplayer() {
 
 
 function downloadSongOrder() {
-    if (!localStorage.getItem('playlist')) {
-        resetSongsOrder();
-        return;
-    }
-    songsOrder = localStorage.getItem('playlist').split(',');
+    const storageOrderData = localStorage.getItem('playlist')
+
+    songsOrder = storageOrderData
+        ? storageOrderData.split(',')
+        : getResetOrder()
 }
 
 
 
 function checkDataChange() {
-    // если песен стало меньше, обнуляем плейлист
     if (songsOrder.length > songsMetaData.length) {
-        resetSongsOrder();
-        return;
+        songsOrder = getResetOrder()
+        uploadSongsOrder(songsOrder)
     }
 
-    // если песен стало больше, добавляем новые в начало плейлиста
-    if (songsOrder.length < songsMetaData.length) {
-        let difference = songsMetaData.length - songsOrder.length;
+    else if (songsOrder.length < songsMetaData.length) {
+        let lengthDiff = songsMetaData.length - songsOrder.length
         
-        for (let i = 0; i < difference; i++) {
-            songsOrder[i] = i;
+        for (let i = 0; i < lengthDiff; i++) {
+            songsOrder[i] = i
         }
 
-        let oldPlaylist = localStorage.getItem('playlist').split(',');
+        let oldPlaylist = localStorage.getItem('playlist').split(',')
 
         for (let i = 0; i < oldPlaylist.length; i++) {
-            songsOrder[i + difference] = parseInt(oldPlaylist[i]) + difference;
+            songsOrder[i + lengthDiff] = parseInt(oldPlaylist[i]) + lengthDiff
         }
     }
 }
@@ -515,7 +514,7 @@ function convertTime(playingTime) {
 
 
 function songClick() {
-    activeSong = this;
+    activeSong = this
 
     this.classList.contains('active-song')
         ? playPauseHandler()
@@ -525,11 +524,11 @@ function songClick() {
 
 
 function updateSongProgress() {
-    currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime);
+    currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime)
+    if (isSongRewinds) return
 
-    if (isSongRewinds) return;
     songProgress.style.width = systemPlayer.currentTime /
-        systemPlayer.duration * 100 + '%';
+        systemPlayer.duration * 100 + '%'
 }
 
 
@@ -543,15 +542,15 @@ function playPauseHandler() {
 function startPlaying() {
     if (!systemPlayer.paused) return
 
-    playPauseImg.src = 'Images/Icons/pause.svg';
-    systemPlayer.play();
+    playPauseImg.src = 'Images/Icons/pause.svg'
+    systemPlayer.play()
 }
 
 function stopPlaying() {
     if (systemPlayer.paused) return
 
-    playPauseImg.src = 'Images/Icons/play.svg';
-    systemPlayer.pause();
+    playPauseImg.src = 'Images/Icons/play.svg'
+    systemPlayer.pause()
 }
 
 
@@ -580,14 +579,14 @@ function switchSong(prevOrNext) {
 
 function enableRepeat() {
     if (isRepeat) return
-    repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg';
-    isRepeat = true;
+    repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg'
+    isRepeat = true
 }
 
 function disableRepeat() {
     if (!isRepeat) return
-    repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg';
-    isRepeat = false;
+    repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg'
+    isRepeat = false
 }
 
 function toggleRepeat() {
@@ -596,25 +595,26 @@ function toggleRepeat() {
         : enableRepeat()
 }
 
-function overwriteSongsOrder() {
-    const newOrder = document.querySelectorAll('.js-song-item')
-    songsOrder = songsOrder.map(
-        (item, index) => item = newOrder[index].dataset.songId)
+function getNewSongsOrder() {
+    const songsList = document.querySelectorAll('.js-song-item')
+    let newOrder = []
+    songsList.forEach((song, index) => newOrder[index] = song.dataset.songId)
 
-    uploadSongsOrder()
+    return newOrder
 }
 
 
 
-function resetSongsOrder() {
-    songsOrder = [];
-    for (let i = 0; i < songsMetaData.length; i++) songsOrder[i] = i;
-    uploadSongsOrder();
+function getResetOrder() {
+    let resetOrder = []
+    for (let i = 0; i < songsMetaData.length; i++) resetOrder[i] = i
+
+    return resetOrder
 }
 
 
 
-function uploadSongsOrder() {
-    localStorage.removeItem('playlist');
-    localStorage.setItem('playlist', songsOrder);
+function uploadSongsOrder(order) {
+    localStorage.removeItem('playlist')
+    localStorage.setItem('playlist', order)
 }
