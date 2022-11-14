@@ -1,3 +1,102 @@
+class SongSwitch {
+
+    static switch (whichSong, songElem) {
+        if (MoveSong.isSongMoved) return
+        if (songElem && !songElem.dataset.songId)
+            throw new Error("Song elem don't have dataset index")
+
+        let desiredSong
+
+        switch (whichSong) {
+            case 'this':
+                desiredSong = songElem
+                break;
+    
+            case 'prev':
+                desiredSong = this.#getAnotherSong(activeSong, 'prev')
+                break;
+    
+            case 'next':
+                desiredSong = this.#getAnotherSong(activeSong, 'next')
+                break;
+    
+            default:
+                throw new Error("Wrong 'whichSong' param")
+        }
+
+        this.#makeSongActive(desiredSong)
+    }
+    
+    static #getAnotherSong(songElem, param) {
+        const thisSongIndex = this.#getIndexInOrder(songElem)
+        
+        let requiredSongIndex
+
+        switch (param) {
+            case 'prev':
+                requiredSongIndex = thisSongIndex == 0
+                    ? songsOrder[songsOrder.length - 1]
+                    : songsOrder[thisSongIndex - 1]
+                break;
+    
+            case 'next':
+                requiredSongIndex = (songsOrder.length - 1 > thisSongIndex)
+                    ? songsOrder[thisSongIndex + 1]
+                    : songsOrder[0]
+                break;
+    
+            default:
+                throw new Error("Wrong 'get' param")
+        }
+
+        const requiredSong = document.querySelector(`[data-song-id="${requiredSongIndex}"]`)
+        return requiredSong
+    }
+    
+    static #getIndexInOrder(songElem) {
+        const index = songsOrder.findIndex(
+            orderSongId => orderSongId == songElem.dataset.songId)
+
+        if (index == -1) throw new Error("Can't find this song in order")
+        return index
+    }
+
+    static #makeSongActive(songElem) {
+        const thisSongData = songsMetaData[songElem.dataset.songId]
+    
+        systemPlayer.src = thisSongData.url
+        songProgress.style.width = 0
+        setSongInfo()
+        replaceActiveSongStyles()
+    
+        activeSong && startPlaying()
+        activeSong = songElem
+
+
+
+        function setSongInfo() {
+            bigCover.src = thisSongData.cover_big
+            songDuration.innerHTML = thisSongData.duration
+            songNameElem.innerHTML = thisSongData.name
+            authorElem.innerHTML = thisSongData.author
+            albumElem.innerHTML = thisSongData.album
+        }
+    
+        function replaceActiveSongStyles() {
+            const activeSong = songList.querySelector('.active-song')
+            if (activeSong) {
+                songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png'
+                songList.querySelector('.active-song').classList.remove('active-song')
+            }
+    
+            songElem.classList.add('active-song')
+            songElem.querySelector('img').src = 'Images/Icons/now-playing.png'
+        }
+    }
+}
+
+
+
 class MoveSong {
     static _song
     static _downX
@@ -183,10 +282,10 @@ let playPauseButton = document.querySelector('.js-play-pause-button')
 playPauseButton.addEventListener("click", playPauseHandler)
 
 let prevSongButton = document.querySelector('.js-prev-button')
-prevSongButton.addEventListener("click", () => switchSong('prev'))
+prevSongButton.addEventListener("click", () => SongSwitch.switch.bind(SongSwitch, 'prev')() )
 
 let nextSongButton = document.querySelector('.js-next-button')
-nextSongButton.addEventListener('click', () => switchSong('next'))
+nextSongButton.addEventListener('click', () => SongSwitch.switch.bind(SongSwitch, 'next')() )
 
 let repeatButton = document.querySelector('.js-repeat')
 repeatButton.addEventListener('click', toggleRepeat)
@@ -215,8 +314,8 @@ let isSongRewinds
 let isRepeat
 let waitEndMove
 
-navigator.mediaSession.setActionHandler('previoustrack', () => switchSong('prev'));
-navigator.mediaSession.setActionHandler('nexttrack', () => switchSong('next'));
+navigator.mediaSession.setActionHandler('previoustrack', () => SongSwitch.switch.bind(SongSwitch, 'prev'))
+navigator.mediaSession.setActionHandler('nexttrack', () => SongSwitch.switch.bind(SongSwitch, 'next'))
 navigator.mediaSession.setActionHandler('play', playPauseHandler);
 navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
@@ -354,7 +453,7 @@ function initAudioplayer() {
 
     systemPlayer.volume = 0.5
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
-    makeSongActive(startSong)
+    SongSwitch.switch('this', startSong)
 }
 
 
@@ -425,85 +524,6 @@ function addSongsListeners() {
 
 
 
-function makeSongActive(songElem) {
-    if (!songElem) return
-    const thisSongData = songsMetaData[songElem.dataset.songId]
-
-    systemPlayer.src = thisSongData.url;
-    songProgress.style.width = 0;
-    setSongInfo()
-    replaceActiveSongStyles()
-
-    function setSongInfo() {
-        bigCover.src = thisSongData.cover_big;
-        songDuration.innerHTML = thisSongData.duration;
-        songNameElem.innerHTML = thisSongData.name;
-        authorElem.innerHTML = thisSongData.author;
-        albumElem.innerHTML = thisSongData.album;
-    }
-
-    function replaceActiveSongStyles() {
-        const activeSong = songList.querySelector('.active-song')
-        if (activeSong) {
-            songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png'
-            songList.querySelector('.active-song').classList.remove('active-song')
-        }
-
-        songElem.classList.add('active-song')
-        songElem.querySelector('img').src = 'Images/Icons/now-playing.png'
-    }
-
-    activeSong && startPlaying()
-    activeSong = songElem
-}
-
-function setNextSongActive(songElem) {
-    if (!songElem) return
-
-    const nextSong = document.querySelector(`[data-song-id="${getNextSongId(songElem)}"]`)
-    nextSong && makeSongActive(nextSong)
-}
-
-function setPrevSongActive(songElem) {
-    if (!songElem) return
-    const prevSong = document.querySelector(`[data-song-id="${getPrevSongId(songElem)}"]`)
-    prevSong && makeSongActive(prevSong)
-}
-
-function getIndexInOrder(songElem) {
-    if (!songElem) return
-
-    const index = songsOrder.findIndex(orderSongId => orderSongId == songElem.dataset.songId)
-    return index == -1
-        ? null
-        : index
-}
-
-function getPrevSongId(songElem) {
-    if (!songElem) return
-    
-    const activeSongIndex = getIndexInOrder(songElem)
-    
-    if (activeSongIndex && songsOrder.length > activeSongIndex) {
-        return activeSongIndex && songsOrder[activeSongIndex - 1]
-    } else {
-        return songsOrder[songsOrder.length - 1]
-    }
-}
-
-function getNextSongId(songElem) {
-    if (!songElem) return
-
-    const activeSongIndex = getIndexInOrder(songElem)
-    if (!activeSongIndex && activeSongIndex != 0) return
-
-    return (songsOrder.length - 1 > activeSongIndex)
-        ? songsOrder[activeSongIndex + 1]
-        : songsOrder[0]
-}
-
-
-
 function convertTime(playingTime) {
     let mins = Math.floor(playingTime / 60);
     let secs = Math.floor(playingTime) % 60;
@@ -518,7 +538,7 @@ function songClick() {
 
     this.classList.contains('active-song')
         ? playPauseHandler()
-        : makeSongActive(activeSong, 'playSong')
+        : SongSwitch.switch('this', activeSong)
 }
 
 
@@ -557,22 +577,11 @@ function stopPlaying() {
 
 function songEndedHandler() {
     if (!MoveSong.isSongMoved) {
-        isRepeat || setNextSongActive(activeSong)
+        isRepeat || SongSwitch.switch('next')
         systemPlayer.play()
     } else {
         waitEndMove = true
     }
-}
-
-
-
-function switchSong(prevOrNext) {
-    if (MoveSong.isSongMoved) return
-
-    disableRepeat();
-    (prevOrNext == 'prev')
-        ? setPrevSongActive(activeSong)
-        : setNextSongActive(activeSong)
 }
 
 
@@ -595,6 +604,8 @@ function toggleRepeat() {
         : enableRepeat()
 }
 
+
+
 function getNewSongsOrder() {
     const songsList = document.querySelectorAll('.js-song-item')
     let newOrder = []
@@ -603,16 +614,12 @@ function getNewSongsOrder() {
     return newOrder
 }
 
-
-
 function getResetOrder() {
     let resetOrder = []
     for (let i = 0; i < songsMetaData.length; i++) resetOrder[i] = i
 
     return resetOrder
 }
-
-
 
 function uploadSongsOrder(order) {
     localStorage.removeItem('playlist')
