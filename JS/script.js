@@ -269,6 +269,28 @@ class PlayerVolume {
 
 
 
+class PlayerRepeat {
+    static toggle() {
+        isRepeat
+            ? this.disable()
+            : this.enable()
+    }
+
+    static enable() {
+        if (isRepeat) return
+        repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg'
+        isRepeat = true
+    }
+    
+    static disable() {
+        if (!isRepeat) return
+        repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg'
+        isRepeat = false
+    }
+}
+
+
+
 let systemPlayer = document.querySelector('#audioplayer')
 systemPlayer.addEventListener('play', startPlaying)
 systemPlayer.addEventListener('pause', stopPlaying)
@@ -288,7 +310,7 @@ let nextSongButton = document.querySelector('.js-next-button')
 nextSongButton.addEventListener('click', () => SongSwitch.switch.bind(SongSwitch, 'next')() )
 
 let repeatButton = document.querySelector('.js-repeat')
-repeatButton.addEventListener('click', toggleRepeat)
+repeatButton.addEventListener('click', () => PlayerRepeat.toggle.bind(PlayerRepeat)())
 
 let volumeButton = document.querySelector('.js-volume-icon')
 volumeButton.addEventListener('click', PlayerVolume.toggleVolume.bind(PlayerVolume))
@@ -582,26 +604,6 @@ function songEndedHandler() {
     } else {
         waitEndMove = true
     }
-}
-
-
-
-function enableRepeat() {
-    if (isRepeat) return
-    repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg'
-    isRepeat = true
-}
-
-function disableRepeat() {
-    if (!isRepeat) return
-    repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg'
-    isRepeat = false
-}
-
-function toggleRepeat() {
-    isRepeat
-        ? disableRepeat()
-        : enableRepeat()
 }
 
 
