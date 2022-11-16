@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::before, ::after {
+    box-sizing: border-box;
+}
+
+::placeholder {
+    color: inherit;
+}
+
+:focus, :active {
+    outline: none;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+a, a:visited {
+    text-decoration: none;
+}
+
+button,select,input,textarea {
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    background-color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+textarea {
+    resize: none;
+}
+
+li {
+    list-style: none;
+}

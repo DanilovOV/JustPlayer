@@ -1,0 +1,27 @@
+html, body{
+    height: 100%;
+}
+
+body {
+    position: relative;
+    min-width: 320px;
+    font: 14px/1.5 "Open Sans", sans-serif;
+    background: $grey-900;
+    color: $white;
+
+    &--fixed {
+        overflow: hidden;
+    }
+}
+
+.wrapper {
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 1140px;
+    margin: 0px auto;
+    padding: 0 20px;
+}
