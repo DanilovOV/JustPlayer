@@ -1,16 +1,7 @@
-$ff: "Open Sans";
-$ffr: "Raleway", sans-serif;
+$ff: "Helvetica Neue", sans-serif;
 
-$white: #ffffff;
-$black: #000000;
-
-$grey-100: #f5f5f5;
-$grey-200: #cccccc;
-$grey-300: #9a9a9a;
-$grey-400: #86878b;
-$grey-700: #333333;
-$grey-900: #212121;
-
-$orange-300: #ff9b51;
-$orange-400: #ff8b38;
-
+:root {
+    --page-bg-color: #222629;
+    --player-bg-color: #192029;
+    --player-text-color: #607D8B;
+}
