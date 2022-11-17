@@ -87,12 +87,12 @@ class SongSwitch {
         function replaceActiveSongStyles() {
             const activeSong = songList.querySelector('.active-song')
             if (activeSong) {
-                songList.querySelector('.active-song img').src = 'Images/Icons/list-play.png'
+                songList.querySelector('.active-song img').src = 'assets/img/icons/list-play.png'
                 songList.querySelector('.active-song').classList.remove('active-song')
             }
     
             songElem.classList.add('active-song')
-            songElem.querySelector('img').src = 'Images/Icons/now-playing.png'
+            songElem.querySelector('img').src = 'assets/img/icons/now-playing.png'
         }
     }
 }
@@ -257,7 +257,7 @@ class PlayerVolume {
     
         systemPlayer.volume = 0
         currentVolume.style.width = 0
-        volumeButton.querySelector('img').src = 'Images/Icons/mute.svg'
+        volumeButton.querySelector('img').src = 'assets/img/icons/mute.svg'
     }
     
     static unmute() {
@@ -265,7 +265,7 @@ class PlayerVolume {
     
         systemPlayer.volume = this.volumeBeforeMute = this.volumeBeforeMute || 0.5
         currentVolume.style.width = systemPlayer.volume * 100 + '%'
-        volumeButton.querySelector('img').src = 'Images/Icons/volume.svg'
+        volumeButton.querySelector('img').src = 'assets/img/icons/volume.svg'
     }
 }
 
@@ -280,13 +280,13 @@ class PlayerRepeat {
 
     static enable() {
         if (isRepeat) return
-        repeatButton.querySelector('img').src = 'Images/Icons/repeat-on.svg'
+        repeatButton.querySelector('img').src = 'assets/img/icons/repeat-on.svg'
         isRepeat = true
     }
     
     static disable() {
         if (!isRepeat) return
-        repeatButton.querySelector('img').src = 'Images/Icons/repeat-off.svg'
+        repeatButton.querySelector('img').src = 'assets/img/icons/repeat-off.svg'
         isRepeat = false
     }
 }
@@ -350,117 +350,117 @@ let songsMetaData = [
         "name": "Half Moon",
         "author": "Tinlicker feat Morgan Jones",
         "album": "Remember the Future",
-        "url": "Songs/Half Moon.mp3",
-        "cover_big": "/assets/Half_Moon.jpg",
-        "cover_small": "/assets/Half_Moon_small.jpg",
+        "url": "./assets/songs/Half Moon.mp3",
+        "cover_big": "./assets/img/covers/Half_Moon.jpg",
+        "cover_small": "./assets/img/covers/Half_Moon_small.jpg",
         "duration": "7:21"
     },
     {
         "name": "Scary People",
         "author": "Georgi Kay",
         "album": "Where I Go to Disappear",
-        "url": "Songs/Scary People.mp3",
-        "cover_big": "/assets/Where_I_Go_To_Disappear.jpg",
-        "cover_small": "/assets/Where_I_Go_To_Disappear_small.jpg",
+        "url": "./assets/songs/Scary People.mp3",
+        "cover_big": "./assets/img/covers/Where_I_Go_To_Disappear.jpg",
+        "cover_small": "./assets/img/covers/Where_I_Go_To_Disappear_small.jpg",
         "duration": "3:06"
     },
     {
         "name": "Battles",
         "author": "Alpine Universe",
         "album": "Single",
-        "url": "Songs/Battles.mp3",
-        "cover_big": "/assets/Battles.jpg",
-        "cover_small": "/assets/Battles_small.jpg",
+        "url": "./assets/songs/Battles.mp3",
+        "cover_big": "./assets/img/covers/Battles.jpg",
+        "cover_small": "./assets/img/covers/Battles_small.jpg",
         "duration": "3:39"
     },
     {
         "name": "The Human Kolossus",
         "author": "Alpine Universe",
         "album": "The Alpine Universe",
-        "url": "Songs/The Human Kolossus.mp3",
-        "cover_big": "/assets/The_Alpine_Universe.jpg",
-        "cover_small": "/assets/The_Alpine_Universe_small.jpg",
+        "url": "./assets/songs/The Human Kolossus.mp3",
+        "cover_big": "./assets/img/covers/The_Alpine_Universe.jpg",
+        "cover_small": "./assets/img/covers/The_Alpine_Universe_small.jpg",
         "duration": "4:03"
     },
     {
         "name": "High Elevation",
         "author": "Alpine Universe",
         "album": "Single",
-        "url": "Songs/High Elevation.mp3",
-        "cover_big": "/assets/High_Elevation.jpg",
-        "cover_small": "/assets/High_Elevation_small.jpg",
+        "url": "./assets/songs/High Elevation.mp3",
+        "cover_big": "./assets/img/covers/High_Elevation.jpg",
+        "cover_small": "./assets/img/covers/High_Elevation_small.jpg",
         "duration": "2:54"
     },
     {
         "name": "Shard",
         "author": "Deep Koliis",
         "album": "Single",
-        "url": "Songs/Shard.mp3",
-        "cover_big": "/assets/Shard.jpg",
-        "cover_small": "/assets/Shard_small.jpg",
+        "url": "./assets/songs/Shard.mp3",
+        "cover_big": "./assets/img/covers/Shard.jpg",
+        "cover_small": "./assets/img/covers/Shard_small.jpg",
         "duration": "4:30"
     },
     {
         "name": "Ski the Andes",
         "author": "Alpine Universe",
         "album": "The Empire of Winds",
-        "url": "Songs/Ski the Andes.mp3",
-        "cover_big": "/assets/The_Empire_of_Winds.jpg",
-        "cover_small": "/assets/The_Empire_of_Winds_small.jpg",
+        "url": "./assets/songs/Ski the Andes.mp3",
+        "cover_big": "./assets/img/covers/The_Empire_of_Winds.jpg",
+        "cover_small": "./assets/img/covers/The_Empire_of_Winds_small.jpg",
         "duration": "2:54"
     },
     {
         "name": "Organika",
         "author": "Alpine Universe",
         "album": "The Alpine Universe",
-        "url": "Songs/Organika.mp3",
-        "cover_big": "/assets/The_Alpine_Universe.jpg",
-        "cover_small": "/assets/The_Alpine_Universe_small.jpg",
+        "url": "./assets/songs/Organika.mp3",
+        "cover_big": "./assets/img/covers/The_Alpine_Universe.jpg",
+        "cover_small": "./assets/img/covers/The_Alpine_Universe_small.jpg",
         "duration": "3:03"
     },
     {
         "name": "Throw Me to the Wolves",
         "author": "Future Royalty",
         "album": "Single",
-        "url": "Songs/Throw Me to the Wolves.mp3",
-        "cover_big": "/assets/Throw_Me_To_The_Wolves.jpg",
-        "cover_small": "/assets/Throw_Me_To_The_Wolves_small.jpg",
+        "url": "./assets/songs/Throw Me to the Wolves.mp3",
+        "cover_big": "./assets/img/covers/Throw_Me_To_The_Wolves.jpg",
+        "cover_small": "./assets/img/covers/Throw_Me_To_The_Wolves_small.jpg",
         "duration": "3:55"
     },
     {
         "name": "Monumental",
         "author": "Aviators",
         "album": "Let There to Be Fire",
-        "url": "Songs/Monumental.mp3",
-        "cover_big": "/assets/Let_There_To_Be_Fire.jpg",
-        "cover_small": "/assets/Let_There_To_Be_Fire_small.jpg",
+        "url": "./assets/songs/Monumental.mp3",
+        "cover_big": "./assets/img/covers/Let_There_To_Be_Fire.jpg",
+        "cover_small": "./assets/img/covers/Let_There_To_Be_Fire_small.jpg",
         "duration": "5:46"
     },
     {
         "name": "Reverse Dance",
         "author": "Andrey Vinogradov",
         "album": "Single",
-        "url": "Songs/Reverse Dance.mp3",
-        "cover_big": "/assets/Reverse_Dance.jpg",
-        "cover_small": "/assets/Reverse_Dance_small.jpg",
+        "url": "./assets/songs/Reverse Dance.mp3",
+        "cover_big": "./assets/img/covers/Reverse_Dance.jpg",
+        "cover_small": "./assets/img/covers/Reverse_Dance_small.jpg",
         "duration": "3:59"
     },
     {
         "name": "The Last of Her Kind",
         "author": "Peter Gundry",
         "album": "The Elixir of Life",
-        "url": "Songs/The Last of Her Kind.mp3",
-        "cover_big": "/assets/The_Elixir_Of_Life.jpg",
-        "cover_small": "/assets/The_Elixir_Of_Life_small.jpg",
+        "url": "./assets/songs/The Last of Her Kind.mp3",
+        "cover_big": "./assets/img/covers/The_Elixir_Of_Life.jpg",
+        "cover_small": "./assets/img/covers/The_Elixir_Of_Life_small.jpg",
         "duration": "3:53"
     },
     {
         "name": "We're The Devils",
         "author": "Karliene",
         "album": "Single",
-        "url": "Songs/We're The Devils.mp3",
-        "cover_big": "/assets/We_re_The_Devils.png",
-        "cover_small": "/assets/We_re_The_Devils_small.png",
+        "url": "./assets/songs/We're The Devils.mp3",
+        "cover_big": "./assets/img/covers/We_re_The_Devils.png",
+        "cover_small": "./assets/img/covers/We_re_The_Devils_small.png",
         "duration": "5:12"
     }
 ];
@@ -524,7 +524,7 @@ function renderSongs() {
         songList.insertAdjacentHTML('beforeend', 
             `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
                 <div class="audioplayer__playingStatusIcon"> \
-                    <img src="Images/Icons/list-play.png"> \
+                    <img src="assets/img/icons/list-play.png"> \
                 </div> \
                 <div class="audioplayer__itemMetaData"> \
                     <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
@@ -586,14 +586,14 @@ function playPauseHandler() {
 function startPlaying() {
     if (!systemPlayer.paused) return
 
-    playPauseImg.src = 'Images/Icons/pause.svg'
+    playPauseImg.src = 'assets/img/icons/pause.svg'
     systemPlayer.play()
 }
 
 function stopPlaying() {
     if (systemPlayer.paused) return
 
-    playPauseImg.src = 'Images/Icons/play.svg'
+    playPauseImg.src = 'assets/img/icons/play.svg'
     systemPlayer.pause()
 }
 
