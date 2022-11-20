@@ -1,5 +1,7 @@
 import songsMetaData from './scripts/metadata'
 
+import PlayerStorage from './scripts/PlayerStorage';
+
 import './styles/app.scss';
 import './assets/icons/list-play.png';
 import './assets/icons/now-playing.png';
@@ -169,8 +171,9 @@ class MoveSong {
         this.isSongMoved = false
         this.songShadow.replaceWith(this._song)
         
-        songsOrder = getNewSongsOrder()
-        uploadSongsOrder(songsOrder)
+
+        const songsList = document.querySelectorAll('.js-song-item')
+        songsOrder = playerStorage.newOrder(songsList)
 
         this._song.classList.remove('movable')
         this._song.removeAttribute('style')
@@ -361,51 +364,17 @@ navigator.mediaSession.setActionHandler('play', playPauseHandler);
 navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
-initAudioplayer()
 
-function initAudioplayer() {
-    downloadSongOrder()
-    checkDataChange()
-    renderSongs()
+// Инициализация плеера
 
-    systemPlayer.volume = 0.5
-    const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
-    SongSwitch.switch('this', startSong)
-}
+const playerStorage = new PlayerStorage()
+songsOrder = playerStorage.order
 
+renderSongs()
 
-
-function downloadSongOrder() {
-    const storageOrderData = localStorage.getItem('playlist')
-
-    songsOrder = storageOrderData
-        ? storageOrderData.split(',')
-        : getResetOrder()
-}
-
-
-
-function checkDataChange() {
-    if (songsOrder.length > songsMetaData.length) {
-        songsOrder = getResetOrder()
-        uploadSongsOrder(songsOrder)
-    }
-
-    else if (songsOrder.length < songsMetaData.length) {
-        let lengthDiff = songsMetaData.length - songsOrder.length
-        
-        for (let i = 0; i < lengthDiff; i++) {
-            songsOrder[i] = i
-        }
-
-        let oldPlaylist = localStorage.getItem('playlist').split(',')
-
-        for (let i = 0; i < oldPlaylist.length; i++) {
-            songsOrder[i + lengthDiff] = parseInt(oldPlaylist[i]) + lengthDiff
-        }
-    }
-}
-
+systemPlayer.volume = 0.5
+const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
+SongSwitch.switch('this', startSong)
 
 
 
@@ -413,6 +382,7 @@ function checkDataChange() {
 function renderSongs() {
     const songList = document.querySelector('.js-songs-list')
 
+    console.log(typeof songsOrder)
     songsOrder.forEach(num => {
         songList.insertAdjacentHTML('beforeend', 
             `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
@@ -494,26 +464,4 @@ function songEndedHandler() {
     } else {
         waitEndMove = true
     }
-}
-
-
-
-function getNewSongsOrder() {
-    const songsList = document.querySelectorAll('.js-song-item')
-    let newOrder = []
-    songsList.forEach((song, index) => newOrder[index] = song.dataset.songId)
-
-    return newOrder
-}
-
-function getResetOrder() {
-    let resetOrder = []
-    for (let i = 0; i < songsMetaData.length; i++) resetOrder[i] = i
-
-    return resetOrder
-}
-
-function uploadSongsOrder(order) {
-    localStorage.removeItem('playlist')
-    localStorage.setItem('playlist', order)
 }
