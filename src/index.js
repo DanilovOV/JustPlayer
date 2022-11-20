@@ -1,9 +1,22 @@
+import songsMetaData from './scripts/metadata'
+
 import './styles/app.scss';
 import './assets/icons/list-play.png';
 import './assets/icons/now-playing.png';
 import './assets/icons/pause.svg';
 import './assets/icons/mute.svg';
 import './assets/icons/repeat-on.svg';
+
+
+
+
+
+
+
+
+
+
+
 
 class SongSwitch {
 
@@ -348,102 +361,12 @@ navigator.mediaSession.setActionHandler('play', playPauseHandler);
 navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
-let songsMetaData = [
-    {
-        "path": "music/half_moon/",
-        "name": "Half Moon",
-        "author": "Tinlicker feat Morgan Jones",
-        "album": "Remember the Future",
-        "duration": "7:21",
-    },
-    {
-        "path": "music/scary_people/",
-        "name": "Scary People",
-        "author": "Georgi Kay",
-        "album": "Where I Go to Disappear",
-        "duration": "3:06",
-    },
-    {
-        "path": "music/battles/",
-        "name": "Battles",
-        "author": "Alpine Universe",
-        "album": "Single",
-        "duration": "3:39",
-    },
-    {
-        "path": "music/the_human_colossus/",
-        "name": "The Human Kolossus",
-        "author": "Alpine Universe",
-        "album": "The Alpine Universe",
-        "duration": "4:03",
-    },
-    {
-        "path": "music/high_elevation/",
-        "name": "High Elevation",
-        "author": "Alpine Universe",
-        "album": "Single",
-        "duration": "2:54",
-    },
-    {
-        "path": "music/shard/",
-        "name": "Shard",
-        "author": "Deep Koliis",
-        "album": "Single",
-        "duration": "4:30",
-    },
-    {
-        "path": "music/ski_the_andes/",
-        "name": "Ski the Andes",
-        "author": "Alpine Universe",
-        "album": "The Empire of Winds",
-        "duration": "2:54",
-    },
-    {
-        "path": "music/organika/",
-        "name": "Organika",
-        "author": "Alpine Universe",
-        "album": "The Alpine Universe",
-        "duration": "3:03",
-    },
-    {
-        "path": "music/monumental/",
-        "name": "Monumental",
-        "author": "Aviators",
-        "album": "Let There to Be Fire",
-        "duration": "5:46",
-    },
-    {
-        "path": "music/reverse_dance/",
-        "name": "Reverse Dance",
-        "author": "Andrey Vinogradov",
-        "album": "Single",
-        "duration": "3:59",
-    },
-    {
-        "path": "music/the_last_of_her_kind/",
-        "name": "The Last of Her Kind",
-        "author": "Peter Gundry",
-        "album": "The Elixir of Life",
-        "duration": "3:53",
-    },
-    {
-        "path": "music/we_re_the_devils/",
-        "name": "We're The Devils",
-        "author": "Karliene",
-        "album": "Single",
-        "duration": "5:12",
-    }
-];
-
-
-
 initAudioplayer()
 
 function initAudioplayer() {
     downloadSongOrder()
     checkDataChange()
     renderSongs()
-    addSongsListeners()
 
     systemPlayer.volume = 0.5
     const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
@@ -505,17 +428,12 @@ function renderSongs() {
             </div>`
         )
     })
-}
 
-
-
-function addSongsListeners() {
     document.querySelectorAll('.js-song-item').forEach(song => {
         song.addEventListener('click', songClick)
         song.addEventListener('mousedown', MoveSong.start.bind(MoveSong))
     })
 }
-
 
 
 function convertTime(playingTime) {
