@@ -1,4 +1,9 @@
 import './styles/app.scss';
+import './assets/icons/list-play.png';
+import './assets/icons/now-playing.png';
+import './assets/icons/pause.svg';
+import './assets/icons/mute.svg';
+import './assets/icons/repeat-on.svg';
 
 class SongSwitch {
 
@@ -66,7 +71,7 @@ class SongSwitch {
     static #makeSongActive(songElem) {
         const thisSongData = songsMetaData[songElem.dataset.songId]
     
-        systemPlayer.src = thisSongData.url
+        systemPlayer.src = thisSongData.path + 'song.mp3'
         songProgress.style.width = 0
         setSongInfo()
         replaceActiveSongStyles()
@@ -75,9 +80,8 @@ class SongSwitch {
         activeSong = songElem
 
 
-
         function setSongInfo() {
-            bigCover.src = thisSongData.cover_big
+            bigCover.src = thisSongData.path + 'cover_big.jpg'
             songDuration.innerHTML = thisSongData.duration
             songNameElem.innerHTML = thisSongData.name
             authorElem.innerHTML = thisSongData.author
@@ -87,12 +91,12 @@ class SongSwitch {
         function replaceActiveSongStyles() {
             const activeSong = songList.querySelector('.active-song')
             if (activeSong) {
-                songList.querySelector('.active-song img').src = 'assets/img/icons/list-play.png'
+                songList.querySelector('.active-song img').src = './assets/list-play.png'
                 songList.querySelector('.active-song').classList.remove('active-song')
             }
     
             songElem.classList.add('active-song')
-            songElem.querySelector('img').src = 'assets/img/icons/now-playing.png'
+            songElem.querySelector('img').src = './assets/now-playing.png'
         }
     }
 }
@@ -257,7 +261,7 @@ class PlayerVolume {
     
         systemPlayer.volume = 0
         currentVolume.style.width = 0
-        volumeButton.querySelector('img').src = 'assets/img/icons/mute.svg'
+        volumeButton.querySelector('img').src = './assets/mute.svg'
     }
     
     static unmute() {
@@ -265,7 +269,7 @@ class PlayerVolume {
     
         systemPlayer.volume = this.volumeBeforeMute = this.volumeBeforeMute || 0.5
         currentVolume.style.width = systemPlayer.volume * 100 + '%'
-        volumeButton.querySelector('img').src = 'assets/img/icons/volume.svg'
+        volumeButton.querySelector('img').src = './assets/volume.svg'
     }
 }
 
@@ -280,13 +284,13 @@ class PlayerRepeat {
 
     static enable() {
         if (isRepeat) return
-        repeatButton.querySelector('img').src = 'assets/img/icons/repeat-on.svg'
+        repeatButton.querySelector('img').src = './assets/repeat-on.svg'
         isRepeat = true
     }
     
     static disable() {
         if (!isRepeat) return
-        repeatButton.querySelector('img').src = 'assets/img/icons/repeat-off.svg'
+        repeatButton.querySelector('img').src = './assets/repeat-off.svg'
         isRepeat = false
     }
 }
@@ -344,124 +348,90 @@ navigator.mediaSession.setActionHandler('play', playPauseHandler);
 navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
-
 let songsMetaData = [
     {
+        "path": "music/half_moon/",
         "name": "Half Moon",
         "author": "Tinlicker feat Morgan Jones",
         "album": "Remember the Future",
-        "url": "./assets/songs/Half Moon.mp3",
-        "cover_big": "./assets/img/covers/Half_Moon.jpg",
-        "cover_small": "./assets/img/covers/Half_Moon_small.jpg",
-        "duration": "7:21"
+        "duration": "7:21",
     },
     {
+        "path": "music/scary_people/",
         "name": "Scary People",
         "author": "Georgi Kay",
         "album": "Where I Go to Disappear",
-        "url": "./assets/songs/Scary People.mp3",
-        "cover_big": "./assets/img/covers/Where_I_Go_To_Disappear.jpg",
-        "cover_small": "./assets/img/covers/Where_I_Go_To_Disappear_small.jpg",
-        "duration": "3:06"
+        "duration": "3:06",
     },
     {
+        "path": "music/battles/",
         "name": "Battles",
         "author": "Alpine Universe",
         "album": "Single",
-        "url": "./assets/songs/Battles.mp3",
-        "cover_big": "./assets/img/covers/Battles.jpg",
-        "cover_small": "./assets/img/covers/Battles_small.jpg",
-        "duration": "3:39"
+        "duration": "3:39",
     },
     {
+        "path": "music/the_human_colossus/",
         "name": "The Human Kolossus",
         "author": "Alpine Universe",
         "album": "The Alpine Universe",
-        "url": "./assets/songs/The Human Kolossus.mp3",
-        "cover_big": "./assets/img/covers/The_Alpine_Universe.jpg",
-        "cover_small": "./assets/img/covers/The_Alpine_Universe_small.jpg",
-        "duration": "4:03"
+        "duration": "4:03",
     },
     {
+        "path": "music/high_elevation/",
         "name": "High Elevation",
         "author": "Alpine Universe",
         "album": "Single",
-        "url": "./assets/songs/High Elevation.mp3",
-        "cover_big": "./assets/img/covers/High_Elevation.jpg",
-        "cover_small": "./assets/img/covers/High_Elevation_small.jpg",
-        "duration": "2:54"
+        "duration": "2:54",
     },
     {
+        "path": "music/shard/",
         "name": "Shard",
         "author": "Deep Koliis",
         "album": "Single",
-        "url": "./assets/songs/Shard.mp3",
-        "cover_big": "./assets/img/covers/Shard.jpg",
-        "cover_small": "./assets/img/covers/Shard_small.jpg",
-        "duration": "4:30"
+        "duration": "4:30",
     },
     {
+        "path": "music/ski_the_andes/",
         "name": "Ski the Andes",
         "author": "Alpine Universe",
         "album": "The Empire of Winds",
-        "url": "./assets/songs/Ski the Andes.mp3",
-        "cover_big": "./assets/img/covers/The_Empire_of_Winds.jpg",
-        "cover_small": "./assets/img/covers/The_Empire_of_Winds_small.jpg",
-        "duration": "2:54"
+        "duration": "2:54",
     },
     {
+        "path": "music/organika/",
         "name": "Organika",
         "author": "Alpine Universe",
         "album": "The Alpine Universe",
-        "url": "./assets/songs/Organika.mp3",
-        "cover_big": "./assets/img/covers/The_Alpine_Universe.jpg",
-        "cover_small": "./assets/img/covers/The_Alpine_Universe_small.jpg",
-        "duration": "3:03"
+        "duration": "3:03",
     },
     {
-        "name": "Throw Me to the Wolves",
-        "author": "Future Royalty",
-        "album": "Single",
-        "url": "./assets/songs/Throw Me to the Wolves.mp3",
-        "cover_big": "./assets/img/covers/Throw_Me_To_The_Wolves.jpg",
-        "cover_small": "./assets/img/covers/Throw_Me_To_The_Wolves_small.jpg",
-        "duration": "3:55"
-    },
-    {
+        "path": "music/monumental/",
         "name": "Monumental",
         "author": "Aviators",
         "album": "Let There to Be Fire",
-        "url": "./assets/songs/Monumental.mp3",
-        "cover_big": "./assets/img/covers/Let_There_To_Be_Fire.jpg",
-        "cover_small": "./assets/img/covers/Let_There_To_Be_Fire_small.jpg",
-        "duration": "5:46"
+        "duration": "5:46",
     },
     {
+        "path": "music/reverse_dance/",
         "name": "Reverse Dance",
         "author": "Andrey Vinogradov",
         "album": "Single",
-        "url": "./assets/songs/Reverse Dance.mp3",
-        "cover_big": "./assets/img/covers/Reverse_Dance.jpg",
-        "cover_small": "./assets/img/covers/Reverse_Dance_small.jpg",
-        "duration": "3:59"
+        "duration": "3:59",
     },
     {
+        "path": "music/the_last_of_her_kind/",
         "name": "The Last of Her Kind",
         "author": "Peter Gundry",
         "album": "The Elixir of Life",
-        "url": "./assets/songs/The Last of Her Kind.mp3",
-        "cover_big": "./assets/img/covers/The_Elixir_Of_Life.jpg",
-        "cover_small": "./assets/img/covers/The_Elixir_Of_Life_small.jpg",
-        "duration": "3:53"
+        "duration": "3:53",
     },
     {
+        "path": "music/we_re_the_devils/",
         "name": "We're The Devils",
         "author": "Karliene",
         "album": "Single",
-        "url": "./assets/songs/We're The Devils.mp3",
-        "cover_big": "./assets/img/covers/We_re_The_Devils.png",
-        "cover_small": "./assets/img/covers/We_re_The_Devils_small.png",
-        "duration": "5:12"
+        "duration": "5:12",
     }
 ];
 
@@ -524,13 +494,13 @@ function renderSongs() {
         songList.insertAdjacentHTML('beforeend', 
             `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
                 <div class="audioplayer__playingStatusIcon"> \
-                    <img src="assets/img/icons/list-play.png"> \
+                    <img src="./assets/list-play.png"> \
                 </div> \
                 <div class="audioplayer__itemMetaData"> \
                     <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
                     <span class="audioplayer__itemAuthorAlbum">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
                 </div> \
-                <img src="${songsMetaData[num].cover_small}" class="audioplayer__smallCover"> \
+                <img src="${songsMetaData[num].path}cover_small.jpg" class="audioplayer__smallCover"> \
                 <div class="audioplayer__itemDuration">${songsMetaData[num].duration}</div> \
             </div>`
         )
@@ -586,14 +556,14 @@ function playPauseHandler() {
 function startPlaying() {
     if (!systemPlayer.paused) return
 
-    playPauseImg.src = 'assets/img/icons/pause.svg'
+    playPauseImg.src = './assets/pause.svg'
     systemPlayer.play()
 }
 
 function stopPlaying() {
     if (systemPlayer.paused) return
 
-    playPauseImg.src = 'assets/img/icons/play.svg'
+    playPauseImg.src = './assets/play.svg'
     systemPlayer.pause()
 }
 

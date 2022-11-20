@@ -8,6 +8,8 @@ const devMode = mode === 'development';
 const target = devMode ? 'web' : 'browserslist';
 const devtool = devMode ? 'source-map' : undefined;
 
+console.log(path.resolve(__dirname, 'music'))
+
 module.exports = {
   mode,
   target,
@@ -34,6 +36,11 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "src/music", to: "music" },
+      ],
     }),
   ],
   module: {
