@@ -1,13 +1,16 @@
 import songsMetaData from './scripts/metadata'
 
-import PlayerStorage from './scripts/PlayerStorage';
+import PlayerStorage from './scripts/PlayerStorage'
+import ProgressBar from './scripts/ProgressBar'
+import convertTime from './scripts/convertTime'
 
-import './styles/app.scss';
-import './assets/icons/list-play.png';
-import './assets/icons/now-playing.png';
-import './assets/icons/pause.svg';
-import './assets/icons/mute.svg';
-import './assets/icons/repeat-on.svg';
+import './styles/app.scss'
+import './assets/icons/list-play.png'
+import './assets/icons/now-playing.png'
+import './assets/icons/pause.svg'
+import './assets/icons/mute.svg'
+import './assets/icons/repeat-on.svg'
+
 
 
 
@@ -199,37 +202,6 @@ class MoveSong {
 
 
 
-class RewindSong {
-    static _barShiftX
-    static _rewindMethod = this.rewind.bind(this)
-
-    static start(e) {
-        isSongRewinds = true
-        this.rewind(e)
-        document.addEventListener('mousemove', this._rewindMethod)
-        document.addEventListener('mouseup', this.end.bind(this), {once: true})
-    }
-    
-    static rewind(e) {
-        this._barShiftX = e.clientX - progressBar.getBoundingClientRect().left
-    
-        if (this._barShiftX < 0) songProgress.style.width = '0%'
-        else if (this._barShiftX > progressBar.offsetWidth) songProgress.style.width = '100%'
-        else songProgress.style.width = this._barShiftX + 'px'
-    }
-    
-    static end() {
-        document.removeEventListener('mousemove', this._rewindMethod)
-        
-        systemPlayer.currentTime = systemPlayer.duration 
-            * ((this._barShiftX / (progressBar.offsetWidth / 100)) / 100)
-    
-        isSongRewinds = false
-    }
-}
-
-
-
 class PlayerVolume {
     static volumeBeforeMute = 0.5
     static _changeMethod = this.change.bind(this)
@@ -319,8 +291,7 @@ systemPlayer.addEventListener('pause', stopPlaying)
 systemPlayer.addEventListener('ended', songEndedHandler)
 systemPlayer.addEventListener('timeupdate', updateSongProgress)
 
-let progressBar = document.querySelector('.js-progress-bar')
-progressBar.addEventListener('mousedown', RewindSong.start.bind(RewindSong))
+
 
 let playPauseButton = document.querySelector('.js-play-pause-button')
 playPauseButton.addEventListener("click", playPauseHandler)
@@ -342,7 +313,7 @@ volumeBar.addEventListener('mousedown', PlayerVolume.startChange.bind(PlayerVolu
 
 let audioplayer = document.querySelector('.js-audioplayer')
 let songList = document.querySelector('.js-songs-list')
-let songProgress = document.querySelector(".js-song-progress")
+
 let playPauseImg = document.querySelector('.js-play-pause-img')
 let bigCover = document.querySelector('.js-big-cover')
 let songDuration = document.querySelector('.js-song-duration')
@@ -376,6 +347,10 @@ systemPlayer.volume = 0.5
 const startSong = document.querySelector(`[data-song-id="${songsOrder[0]}"]`)
 SongSwitch.switch('this', startSong)
 
+const progressBarWrapper = document.querySelector('.js-progress-bar')
+const progressBarProgress = document.querySelector(".js-song-progress")
+
+const progressBar = new ProgressBar(progressBarWrapper, progressBarProgress)
 
 
 
@@ -406,12 +381,7 @@ function renderSongs() {
 }
 
 
-function convertTime(playingTime) {
-    let mins = Math.floor(playingTime / 60);
-    let secs = Math.floor(playingTime) % 60;
-    if (secs < 10) secs = '0' + secs;
-    return (mins + ':' + secs);
-}
+
 
 
 
