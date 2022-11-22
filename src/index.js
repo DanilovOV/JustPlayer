@@ -2,6 +2,8 @@ import songsMetaData from './scripts/metadata'
 
 import PlayerStorage from './scripts/PlayerStorage'
 import ProgressBar from './scripts/ProgressBar'
+import PlayerVolume from './scripts/PlayerVolume'
+
 import convertTime from './scripts/convertTime'
 
 import './styles/app.scss'
@@ -35,15 +37,15 @@ class SongSwitch {
         switch (whichSong) {
             case 'this':
                 desiredSong = songElem
-                break;
+                break
     
             case 'prev':
                 desiredSong = this.#getAnotherSong(activeSong, 'prev')
-                break;
+                break
     
             case 'next':
                 desiredSong = this.#getAnotherSong(activeSong, 'next')
-                break;
+                break
     
             default:
                 throw new Error("Wrong 'whichSong' param")
@@ -62,13 +64,13 @@ class SongSwitch {
                 requiredSongIndex = thisSongIndex == 0
                     ? songsOrder[songsOrder.length - 1]
                     : songsOrder[thisSongIndex - 1]
-                break;
+                break
     
             case 'next':
                 requiredSongIndex = (songsOrder.length - 1 > thisSongIndex)
                     ? songsOrder[thisSongIndex + 1]
                     : songsOrder[0]
-                break;
+                break
     
             default:
                 throw new Error("Wrong 'get' param")
@@ -202,64 +204,7 @@ class MoveSong {
 
 
 
-class PlayerVolume {
-    static volumeBeforeMute = 0.5
-    static _changeMethod = this.change.bind(this)
 
-    static startChange(e) {
-        this.change(e)
-        document.addEventListener('mousemove', this._changeMethod)
-        document.addEventListener('mouseup', this.stopChange.bind(this), {once: true})
-    }
-    
-    static change(e) {
-        const shiftX = e.clientX - volumeBar.getBoundingClientRect().left
-    
-        if (shiftX > 0) {
-            this.setVolume(shiftX)
-        } else {
-            this.volumeBeforeMute = 0
-            this.mute()
-        }
-    }
-    
-    static stopChange() {
-        document.removeEventListener('mousemove', this._changeMethod)
-    }
-
-    static setVolume(mouseShiftX) {
-        this.unmute()
-    
-        currentVolume.style.width = mouseShiftX > volumeBar.offsetWidth
-            ? '100%'
-            : mouseShiftX + 'px'
-    
-        systemPlayer.volume = currentVolume.offsetWidth / volumeBar.offsetWidth
-        this.volumeBeforeMute = systemPlayer.volume
-    }
-
-    static toggleVolume() {
-        (systemPlayer.volume == 0)
-            ? this.unmute()
-            : this.mute()
-    }
-    
-    static mute() {
-        if (!systemPlayer.volume) return
-    
-        systemPlayer.volume = 0
-        currentVolume.style.width = 0
-        volumeButton.querySelector('img').src = './assets/mute.svg'
-    }
-    
-    static unmute() {
-        if (systemPlayer.volume) return
-    
-        systemPlayer.volume = this.volumeBeforeMute = this.volumeBeforeMute || 0.5
-        currentVolume.style.width = systemPlayer.volume * 100 + '%'
-        volumeButton.querySelector('img').src = './assets/volume.svg'
-    }
-}
 
 
 
@@ -357,7 +302,6 @@ const progressBar = new ProgressBar(progressBarWrapper, progressBarProgress)
 function renderSongs() {
     const songList = document.querySelector('.js-songs-list')
 
-    console.log(typeof songsOrder)
     songsOrder.forEach(num => {
         songList.insertAdjacentHTML('beforeend', 
             `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
@@ -379,9 +323,6 @@ function renderSongs() {
         song.addEventListener('mousedown', MoveSong.start.bind(MoveSong))
     })
 }
-
-
-
 
 
 
