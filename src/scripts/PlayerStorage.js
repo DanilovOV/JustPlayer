@@ -2,28 +2,27 @@ import songsMetaData from "./metadata"
 
 export default class PlayerStorage {
 
-    get order() {
+    static get order() {
         let orderString = localStorage.getItem('playlist')
 
         if (orderString) {
             const order = orderString.split(',')
             return order.length > songsMetaData.length
-                ? this.resetOrder()
+                ? this.resetAndUploadOrder()
                 : order
         } else {
-            return this.resetOrder()
+            return this.resetAndUploadOrder()
         }
     }
 
-    newOrder(songsList) {
-        let newOrder = []
-        songsList.forEach((song, index) => newOrder[index] = song.dataset.songId)
+    static getAndUploadNewOrder(songsList) {
+        let newOrder = songsList.map(song => song.dataset.songId)
         
         this.uploadSongsOrder(newOrder)
         return newOrder
     }
 
-    resetOrder() {
+    static resetAndUploadOrder() {
         let resetOrder = []
         for (let i = 0; i < songsMetaData.length; i++) resetOrder[i] = i
 
@@ -31,7 +30,7 @@ export default class PlayerStorage {
         return resetOrder
     }
 
-    uploadSongsOrder(order) {
+    static uploadSongsOrder(order) {
         localStorage.removeItem('playlist')
         localStorage.setItem('playlist', order)
     }    

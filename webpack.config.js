@@ -17,6 +17,11 @@ module.exports = {
   entry: {
     index: './src/index.js',
   },
+  resolve: {
+    alias: {
+      src: path.resolve(__dirname, 'src'),
+    },
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     clean: true,
