@@ -39,20 +39,3 @@ export default class ProgressBar {
     }
 }
 
-function updateSongProgress() {
-    currentPlayTime.innerHTML = convertTime(systemPlayer.currentTime)
-    if (isSongRewinds) return
-
-    songProgress.style.width = systemPlayer.currentTime /
-        systemPlayer.duration * 100 + '%'
-}
-
-function songEndedHandler() {
-    if (!MoveSong.isSongMoved) {
-        isRepeat || SongSwitch.switch('next')
-        systemPlayer.play()
-    } else {
-        waitEndMove = true
-    }
-}
-
