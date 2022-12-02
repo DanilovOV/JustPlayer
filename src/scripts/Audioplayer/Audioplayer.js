@@ -1,8 +1,12 @@
-import PlayPause from "./controls/PlayPause/PlayPause"
-import Next from "./controls/Next/Next"
-import Prev from "./controls/Prev/Prev"
-import songsMetaData from "./metadata"
-import PlayerStorage from "./PlayerStorage"
+import songsMetaData from "../metadata"
+import PlayerStorage from "../PlayerStorage"
+
+import PlayPause from "../controls/PlayPause/PlayPause"
+import Next from "../controls/Next/Next"
+import Prev from "../controls/Prev/Prev"
+
+import startPlaySongIcon from "./list-play.png"
+import activeSongIcon from "./now-playing.png"
 
 export default class Audioplayer {
 
@@ -11,10 +15,11 @@ export default class Audioplayer {
         this.systemPlayer = systemPlayer
         
         this.findElements()
-        this.createElements()
+        this.createControls()
         this.renderSongs()
         this.addListeners()
-        this.init()
+        
+        this.makeSongActive(document.querySelector('.js-song-item'))
     }
     
     findElements() {
@@ -28,7 +33,7 @@ export default class Audioplayer {
         this.albumElem = document.querySelector('.js-song-album')
     }
 
-    createElements() {
+    createControls() {
         this.playPause = new PlayPause(this.systemPlayer)
     
         this.nextButton = new Next(this.systemPlayer)
@@ -63,11 +68,6 @@ export default class Audioplayer {
         this.systemPlayer.addEventListener('timeupdate', this.temp)
     }
 
-    init() {
-        this.systemPlayer.src = songsMetaData[0].path + 'song.mp3'
-        this.activeSong = document.querySelector('.js-song-item')
-    }
-
     temp() {
         return false
     }
@@ -78,59 +78,22 @@ export default class Audioplayer {
         // if (MoveSong.isSongMoved) return
         
         this.order = PlayerStorage.order
-
         if (songElem && !songElem.dataset.songId)
             throw new Error("Song elem don't have data-id attr")
 
-        let desiredSong
+        const songId = this.getOrderIndex(songElem)
 
-        switch (whichSong) {
-            case 'this':
-                desiredSong = songElem
-                break
-    
-            case 'prev':
-                desiredSong = this.#getAnotherSong(songElem, 'prev')
-                break
-    
-            case 'next':
-                desiredSong = this.#getAnotherSong(songElem, 'next')
-                break
-    
-            default:
-                throw new Error("Wrong 'whichSong' param")
-        }
-
-        this.#makeSongActive(desiredSong)
+        if (whichSong == 'this') 
+            this.startNewSong( songElem )
+        if (whichSong == 'prev') 
+            this.startNewSong( document.querySelector(`[data-song-id="${this.getPrevOrderIndex(songId)}"]`) )
+        if (whichSong == 'next') 
+            this.startNewSong( document.querySelector(`[data-song-id="${this.getNextOrderIndex(songId)}"]`) )
     }
-    
-    #getAnotherSong(songElem, whichSong) {
-        const thisSongIndex = this.#getIndexInOrder(songElem)
-        
-        let requiredSongIndex
 
-        switch (whichSong) {
-            case 'prev':
-                requiredSongIndex = thisSongIndex == 0
-                    ? this.order[this.order.length - 1]
-                    : this.order[thisSongIndex - 1]
-                break
-    
-            case 'next':
-                requiredSongIndex = (this.order.length - 1 > thisSongIndex)
-                    ? this.order[thisSongIndex + 1]
-                    : this.order[0]
-                break
-    
-            default:
-                throw new Error("Wrong 'whichSong' param")
-        }
 
-        const requiredSong = document.querySelector(`[data-song-id="${requiredSongIndex}"]`)
-        return requiredSong
-    }
-    
-    #getIndexInOrder(songElem) {
+
+    getOrderIndex(songElem) {
         const index = this.order.findIndex(
             orderSongId => orderSongId == songElem.dataset.songId)
 
@@ -138,35 +101,54 @@ export default class Audioplayer {
         return index
     }
 
-    #makeSongActive(songElem) {
-        const thisSongData = songsMetaData[songElem.dataset.songId]
-        
-        this.systemPlayer.src = thisSongData.path + 'song.mp3'
-        // songProgress.style.width = 0
-        setSongInfo.call(this)
-        replaceActiveSongStyles.call(this)
-    
-        this.activeSong && this.playPause.startPlaying()
+    getPrevOrderIndex(songElemIndex) {
+        return songElemIndex == 0
+            ? this.order[this.order.length - 1]
+            : this.order[songElemIndex - 1]
+    }
+
+    getNextOrderIndex(songElemIndex) {
+        return this.order.length - 1 > songElemIndex
+            ? this.order[songElemIndex + 1]
+            : this.order[0]
+    }
+
+
+
+    startNewSong(songElem) {
+        this.makeSongActive(songElem)
+        this.playPause.startPlaying()
+    }
+
+    makeSongActive(songElem) {
         this.activeSong = songElem
+        // songProgress.style.width = 0
 
+        this.changeActiveSongData(songElem)
+        this.replaceActiveSongStyles(songElem)
+        
+    }
 
-        function setSongInfo() {
-            this.bigCover.src = thisSongData.path + 'cover_big.jpg'
-            this.songDuration.innerHTML = thisSongData.duration
-            this.songNameElem.innerHTML = thisSongData.name
-            this.authorElem.innerHTML = thisSongData.author
-            this.albumElem.innerHTML = thisSongData.album
+    changeActiveSongData(songElem) {
+        const data = songsMetaData[songElem.dataset.songId]
+
+        this.systemPlayer.src = data.path + 'song.mp3'
+        this.bigCover.src = data.path + 'cover_big.jpg'
+        this.songDuration.innerText = data.duration
+        this.songNameElem.innerText = data.name
+        this.authorElem.innerText = data.author
+        this.albumElem.innerText = data.album
+    }
+
+    replaceActiveSongStyles(songElem) {
+        const oldActiveSong = this.songList.querySelector('.active-song')
+
+        if (oldActiveSong) {
+            oldActiveSong.querySelector('img').src = startPlaySongIcon
+            oldActiveSong.classList.remove('active-song')
         }
-    
-        function replaceActiveSongStyles() {
-            const activeSong = this.songList.querySelector('.active-song')
-            if (activeSong) {
-                this.songList.querySelector('.active-song img').src = './assets/list-play.png'
-                this.songList.querySelector('.active-song').classList.remove('active-song')
-            }
-    
-            songElem.classList.add('active-song')
-            songElem.querySelector('img').src = './assets/now-playing.png'
-        }
+
+        songElem.classList.add('active-song')
+        songElem.querySelector('img').src = activeSongIcon
     }
 }
