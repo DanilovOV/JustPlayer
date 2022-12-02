@@ -14,14 +14,11 @@ export default class Audioplayer {
         this.createElements()
         this.renderSongs()
         this.addListeners()
-
-        this.systemPlayer.src = songsMetaData[0].path + 'song.mp3'
+        this.init()
     }
     
     findElements() {
-        this.activeSong = document.querySelector('.js-song-item')
         this.songList = document.querySelector('.js-songs-list')
-        
         this.bigCover = document.querySelector('.js-big-cover')
         this.songDuration = document.querySelector('.js-song-duration')
         this.currentPlayTime = document.querySelector('.js-play-time')
@@ -32,11 +29,8 @@ export default class Audioplayer {
     }
 
     createElements() {
-        this.songList = document.querySelector('.js-songs-list')
-        if (!this.songList) throw new Error('No song list')
-
         this.playPause = new PlayPause(this.systemPlayer)
-        
+    
         this.nextButton = new Next(this.systemPlayer)
         this.nextButton.button.addEventListener('click', () => this.switch.call(this, 'next', this.activeSong))
         
@@ -45,7 +39,6 @@ export default class Audioplayer {
     }
 
     renderSongs() {
-
         PlayerStorage.order.forEach(num => {
             this.songList.insertAdjacentHTML('beforeend', 
                 `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
@@ -68,6 +61,11 @@ export default class Audioplayer {
         this.systemPlayer.addEventListener('pause', () => this.playPause.stopPlaying())
         this.systemPlayer.addEventListener('ended', this.temp)
         this.systemPlayer.addEventListener('timeupdate', this.temp)
+    }
+
+    init() {
+        this.systemPlayer.src = songsMetaData[0].path + 'song.mp3'
+        this.activeSong = document.querySelector('.js-song-item')
     }
 
     temp() {
@@ -133,7 +131,6 @@ export default class Audioplayer {
     }
     
     #getIndexInOrder(songElem) {
-        console.log(songElem)
         const index = this.order.findIndex(
             orderSongId => orderSongId == songElem.dataset.songId)
 
@@ -146,8 +143,8 @@ export default class Audioplayer {
         
         this.systemPlayer.src = thisSongData.path + 'song.mp3'
         // songProgress.style.width = 0
-        setSongInfo()
-        replaceActiveSongStyles()
+        setSongInfo.call(this)
+        replaceActiveSongStyles.call(this)
     
         this.activeSong && this.playPause.startPlaying()
         this.activeSong = songElem
