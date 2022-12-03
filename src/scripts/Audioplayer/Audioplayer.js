@@ -1,11 +1,13 @@
 import songsMetaData from "../metadata"
 import PlayerStorage from "../PlayerStorage"
 
+import convertTime from "../convertTime"
 import PlayPause from "../controls/PlayPause/PlayPause"
 import Next from "../controls/Next/Next"
 import Prev from "../controls/Prev/Prev"
 import Volume from "../controls/Volume/Volume"
 import Repeat from "../controls/Repeat/Repeat"
+import ProgressBar from "../controls/ProgressBar/ProgressBar"
 
 import startPlaySongIcon from "./list-play.png"
 import activeSongIcon from "./now-playing.png"
@@ -22,6 +24,8 @@ export default class Audioplayer {
         this.createControls()
         this.initSongs()
         this.addPlayerListeners()
+        
+        this.currentPlayTime.innerText = '0:00'
     }
     
     findElements() {
@@ -36,8 +40,9 @@ export default class Audioplayer {
     }
 
     createControls() {
+        this.progressBar = new ProgressBar(this.systemPlayer)
         this.playPause = new PlayPause(this.systemPlayer)
-    
+
         this.nextButton = new Next(this.systemPlayer)
         this.nextButton.button.addEventListener('click', () => this.switch.call(this, 'next', this.activeSong))
         
@@ -74,17 +79,13 @@ export default class Audioplayer {
     addPlayerListeners() {
         this.systemPlayer.addEventListener('play', () => this.playPause.startPlaying())
         this.systemPlayer.addEventListener('pause', () => this.playPause.stopPlaying())
-        this.systemPlayer.addEventListener('ended', this.temp)
-        this.systemPlayer.addEventListener('timeupdate', this.temp)
+        this.systemPlayer.addEventListener('ended', () => this.songEndedHandler.call(this))
+        this.systemPlayer.addEventListener('timeupdate', () => this.updateSongProgress.call(this))
         
         navigator.mediaSession.setActionHandler('previoustrack', () => this.switch.call(this, 'prev', this.activeSong))
         navigator.mediaSession.setActionHandler('nexttrack', () => this.switch.call(this, 'next', this.activeSong))
         navigator.mediaSession.setActionHandler('play', () => this.playPause.startPlaying());
         navigator.mediaSession.setActionHandler('pause', () => this.playPause.stopPlaying());
-    }
-
-    temp() {
-        return false
     }
 
 
@@ -105,8 +106,6 @@ export default class Audioplayer {
         if (whichSong == 'next') 
             this.startNewSong( document.querySelector(`[data-song-id="${this.getNextOrderIndex(songId)}"]`) )
     }
-
-
 
     getOrderIndex(songElem) {
         const index = this.order.findIndex(
@@ -137,11 +136,10 @@ export default class Audioplayer {
 
     makeSongActive(songElem) {
         this.activeSong = songElem
-        // songProgress.style.width = 0
+        this.progressBar.progress.style.width = 0
 
         this.changeActiveSongData(songElem)
         this.replaceActiveSongStyles(songElem)
-        
     }
 
     changeActiveSongData(songElem) {
@@ -167,6 +165,7 @@ export default class Audioplayer {
         songElem.querySelector('img').src = activeSongIcon
     }
 
+
     songClick(song) {
         song.classList.contains('active-song')
             ? this.playPause.playPauseHandler()
@@ -175,6 +174,11 @@ export default class Audioplayer {
 
     songEndedHandler() {
         this.repeat.isRepeat || this.switch('next', this.activeSong)
-        systemPlayer.play()
+        this.systemPlayer.play()
+    }
+
+    updateSongProgress() {
+        this.currentPlayTime.innerText = convertTime(this.systemPlayer.currentTime)
+        this.progressBar.update()
     }
 }
