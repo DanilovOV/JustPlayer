@@ -10,9 +10,8 @@ export default class PlayerStorage {
             return order.length > songsMetaData.length
                 ? this.resetAndUploadOrder()
                 : order
-        } else {
+        } else
             return this.resetAndUploadOrder()
-        }
     }
 
     static setAndUploadNewOrder(songsList) {

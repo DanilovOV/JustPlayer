@@ -3,7 +3,7 @@ import mutedIcon from './muted.svg'
 
 export default class Volume {
     volumeBeforeMute = 0.5
-    _changeMethod = this.change.bind(this)
+    _changeMethod = this.setVolume.bind(this)
 
     constructor(systemPlayer) {
         this.systemPlayer = systemPlayer
@@ -23,6 +23,16 @@ export default class Volume {
         this.icon = this.button.querySelector('img')
         if (!this.icon) throw new Error("Can't find img node for prev button icon")
         this.icon.src = unmutedIcon
+    }
+
+    initBar() {
+        this.bar = document.querySelector('.js-volume-bar')
+        if (!this.bar) throw new Error('Cant find volume bar')
+
+        this.volumeLevelBar = document.querySelector('.js-volume-level-bar')
+        if (!this.volumeLevelBar) throw new Error('Cant find volume level bar')
+        
+        this.bar.addEventListener('mousedown', this.startChange.bind(this))
     }
 
 
@@ -51,45 +61,28 @@ export default class Volume {
 
 
 
-    initBar() {
-        this.bar = document.querySelector('.js-volume-bar')
-        if (!this.bar) throw new Error('Cant find volume bar')
-
-        this.volumeLevelBar = document.querySelector('.js-volume-level-bar')
-        if (!this.volumeLevelBar) throw new Error('Cant find volume level bar')
-        
-        this.bar.addEventListener('mousedown', this.startChange.bind(this))
-    }
-
     startChange(e) {
-        this.change(e)
+        this.setVolume(e)
         document.addEventListener('mousemove', this._changeMethod)
         document.addEventListener('mouseup', this.stopChange.bind(this), {once: true})
     }
-    
-    change(e) {
-        const shiftX = e.clientX - this.bar.getBoundingClientRect().left
 
-        if (shiftX > 0)
-            this.setVolume(shiftX)
-        else {
+    setVolume(e) {
+        const shiftX = e.clientX - this.bar.getBoundingClientRect().left
+        shiftX < 0 ? this.mute() : this.unmute()
+
+        if (shiftX < 0) 
             this.volumeBeforeMute = 0
-            this.mute()
-        }
+        else
+            this.volumeLevelBar.style.width = shiftX > this.bar.offsetWidth
+                ? '100%'
+                : shiftX + 'px'
+        
+        this.systemPlayer.volume = this.volumeLevelBar.offsetWidth / this.bar.offsetWidth
+        this.volumeBeforeMute = this.systemPlayer.volume
     }
     
     stopChange() {
         document.removeEventListener('mousemove', this._changeMethod)
-    }
-
-    setVolume(mouseShiftX) {
-        this.unmute()
-    
-        this.volumeLevelBar.style.width = mouseShiftX > this.bar.offsetWidth
-            ? '100%'
-            : mouseShiftX + 'px'
-    
-        this.systemPlayer.volume = this.volumeLevelBar.offsetWidth / this.bar.offsetWidth
-        this.volumeBeforeMute = this.systemPlayer.volume
     }
 }

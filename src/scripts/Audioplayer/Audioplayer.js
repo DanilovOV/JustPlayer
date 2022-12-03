@@ -7,7 +7,7 @@ import Next from "../controls/Next/Next"
 import Prev from "../controls/Prev/Prev"
 import Volume from "../controls/Volume/Volume"
 import Repeat from "../controls/Repeat/Repeat"
-import ProgressBar from "../controls/ProgressBar/ProgressBar"
+import ProgressBar from "../controls/ProgressBar"
 
 import startPlaySongIcon from "./list-play.png"
 import activeSongIcon from "./now-playing.png"
@@ -42,13 +42,13 @@ export default class Audioplayer {
     }
 
     createControls() {
+        this.playPause = new PlayPause(this.wrapper.querySelector('.js-play-pause-button'), this.systemPlayer)
         this.progressBar = new ProgressBar(this.systemPlayer)
-        this.playPause = new PlayPause(this.systemPlayer)
 
-        this.nextButton = new Next(this.systemPlayer)
+        this.nextButton = new Next(this.wrapper.querySelector('.js-next-button'))
         this.nextButton.button.addEventListener('click', () => this.switch.call(this, 'next', this.activeSong))
         
-        this.prevButton = new Prev(this.systemPlayer)
+        this.prevButton = new Prev(this.wrapper.querySelector('.js-prev-button'))
         this.prevButton.button.addEventListener('click', () => this.switch.call(this, 'prev', this.activeSong))
 
         this.volume = new Volume(this.systemPlayer)
