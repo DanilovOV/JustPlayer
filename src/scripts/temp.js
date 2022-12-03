@@ -8,15 +8,9 @@ let volumeBar = document.querySelector('.js-volume-bar-wrapper')
 volumeBar.addEventListener('mousedown', PlayerVolume.startChange.bind(PlayerVolume))
 
 
-let activeSong
 let isSongRewinds
 let isRepeat
 let waitEndMove
-
-navigator.mediaSession.setActionHandler('previoustrack', () => SongSwitch.switch.bind(SongSwitch, 'prev'))
-navigator.mediaSession.setActionHandler('nexttrack', () => SongSwitch.switch.bind(SongSwitch, 'next'))
-navigator.mediaSession.setActionHandler('play', playPauseHandler);
-navigator.mediaSession.setActionHandler('pause', playPauseHandler);
 
 
 

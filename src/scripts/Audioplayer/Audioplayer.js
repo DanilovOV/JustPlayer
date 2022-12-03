@@ -8,6 +8,12 @@ import Prev from "../controls/Prev/Prev"
 import startPlaySongIcon from "./list-play.png"
 import activeSongIcon from "./now-playing.png"
 
+import Volume from "../controls/Volume/Volume"
+
+
+
+
+
 export default class Audioplayer {
 
     constructor(systemPlayer) {
@@ -39,6 +45,8 @@ export default class Audioplayer {
         
         this.prevButton = new Prev(this.systemPlayer)
         this.prevButton.button.addEventListener('click', () => this.switch.call(this, 'prev', this.activeSong))
+
+        this.volume = new Volume(this.systemPlayer)
     }
 
     initSongs() {
