@@ -8,19 +8,18 @@
     <body>
         <div class="wrapper">
             <div class="audioplayer-container">
+
                 <div class="audioplayer js-audioplayer">
                     <div class="audioplayer__left">
                         <audio></audio>
-                        <div class="audioplayer__songImage">
+                        <div class="audioplayer__cover">
                             <img class="js-big-cover" draggable="false">
                         </div>
                         <div class="audioplayer__controls">
-                            <div class="audioplayer__trackblock">
+                            <div class="audioplayer__progressbar-wrapper">
                                 <div class="js-play-time"></div>
-                                <div class="audioplayer__progressBarWrapper js-progress-bar">
-                                    <div class="audioplayer__progressBar">
-                                        <div class="audioplayer__songProgress js-progress-bar-progress"></div>
-                                    </div>
+                                <div class="audioplayer__progressbar js-progress-bar">
+                                    <div class="audioplayer__progress js-progress-bar-progress"></div>
                                 </div>
                                 <div class="js-song-duration"></div>
                             </div>
@@ -28,7 +27,7 @@
                                 <button class="audioplayer__repeat js-repeat-button">
                                     <img draggable="false">
                                 </button>
-                                <div class="audioplayer__mainControls">
+                                <div class="audioplayer__main-controls">
                                     <button class="js-prev-button">
                                         <img draggable="false">
                                     </button>
@@ -39,19 +38,17 @@
                                         <img draggable="false">
                                     </button>
                                 </div>
-                                <div class="audioplayer__volumeContainer">
+                                <div class="audioplayer__volume-wrapper">
                                     <button class="js-mute-button">
                                         <img draggable="false">
                                     </button>
-                                    <div class="audioplayer__volumeBarWrapper js-volume-bar">
-                                        <div class="audioplayer__volumeBar">
-                                            <div class="audioplayer__currentVolume js-volume-level-bar"></div>
-                                        </div>
+                                    <div class="audioplayer__volume-bar js-volume-bar">
+                                        <div class="audioplayer__current-volume js-volume-level-bar"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="audioplayer__songData">
+                        <div class="audioplayer__song-data">
                             <div class="audioplayer__name js-song-name"></div>
                             <div class="js-song-author"></div>
                             <div class="js-song-album"></div>
@@ -62,6 +59,7 @@
                         <div class="js-songs-list"></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </body>

@@ -66,16 +66,16 @@ export default class Audioplayer {
     renderSongs() {
         PlayerStorage.order.forEach(num => {
             this.songList.insertAdjacentHTML('beforeend', 
-                `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
-                    <div class="audioplayer__playingStatusIcon"> \
+                `<div class="song js-song-item" data-song-id="${num}"> \
+                    <div class="song__status-icon"> \
                         <img src="./assets/list-play.png"> \
                     </div> \
-                    <div class="audioplayer__itemMetaData"> \
-                        <span class="audioplayer__itemSongName">${songsMetaData[num].name}</span> \
-                        <span class="audioplayer__itemAuthorAlbum">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
+                    <div class="song__data"> \
+                        <span class="song__name">${songsMetaData[num].name}</span> \
+                        <span class="song__album">${songsMetaData[num].author} - ${songsMetaData[num].album}</span> \
                     </div> \
-                    <img src="${songsMetaData[num].path}cover_small.jpg" class="audioplayer__smallCover"> \
-                    <div class="audioplayer__itemDuration">${songsMetaData[num].duration}</div> \
+                    <img src="${songsMetaData[num].path}cover_small.jpg" class="song__cover"> \
+                    <div class="song__duration">${songsMetaData[num].duration}</div> \
                 </div>`
             )
         })
