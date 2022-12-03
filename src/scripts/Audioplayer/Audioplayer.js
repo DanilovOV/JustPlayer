@@ -24,10 +24,16 @@ export default class Audioplayer {
         
         this.findElements()
         this.createControls()
-        this.initSongs()
+        this.renderSongs()
+        this.addSongsListeners()
         this.addPlayerListeners()
-        
+        this.setStartState()
+    }
+
+    setStartState() {
+        this.volume.setVolume(0.5)
         this.currentPlayTime.innerText = '0:00'
+        this.makeSongActive(this.wrapper.querySelector('.js-song-item'))
     }
     
     findElements() {
@@ -57,7 +63,7 @@ export default class Audioplayer {
         this.moveSong = new MoveSongs(this.songList)
     }
 
-    initSongs() {
+    renderSongs() {
         PlayerStorage.order.forEach(num => {
             this.songList.insertAdjacentHTML('beforeend', 
                 `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
@@ -73,13 +79,13 @@ export default class Audioplayer {
                 </div>`
             )
         })
-        
+    }
+
+    addSongsListeners() {
         this.songList.querySelectorAll('.js-song-item').forEach(item => {
             item.addEventListener('click', () => this.songClick.call(this, item))
             item.addEventListener('mousedown', this.moveSong.start.bind(this.moveSong))
         })
-
-        this.makeSongActive(this.wrapper.querySelector('.js-song-item'))
     }
 
     addPlayerListeners() {

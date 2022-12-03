@@ -3,7 +3,7 @@ import mutedIcon from './muted.svg'
 
 export default class Volume {
     volumeBeforeMute = 0.5
-    _changeMethod = this.setVolume.bind(this)
+    _changeMethod = this.changeVolume.bind(this)
 
     constructor(systemPlayer) {
         this.systemPlayer = systemPlayer
@@ -37,24 +37,34 @@ export default class Volume {
 
 
 
+    setVolume(volume = 0.5) {
+        if (volume < 0) volume = 0
+        if (volume > 1) volume = 1
+        this.systemPlayer.volume = volume
+        volume == 0 ? this.mute('forced') : this.unmute('forced')
+    }
+
     toggleVolume() {
         this.systemPlayer.volume == 0
             ? this.unmute()
             : this.mute()
     }
     
-    mute() {
-        if (!this.systemPlayer.volume) return
+    mute(forced) {
+        if (!this.systemPlayer.volume && !forced) return
     
         this.systemPlayer.volume = 0
         this.volumeLevelBar.style.width = 0
         this.icon.src = mutedIcon
     }
     
-    unmute() {
-        if (this.systemPlayer.volume) return
-    
-        this.systemPlayer.volume = this.volumeBeforeMute = this.volumeBeforeMute || 0.5
+    unmute(forced) {
+        if (this.systemPlayer.volume && !forced) return
+        
+        this.systemPlayer.volume = forced
+            ? this.systemPlayer.volume
+            : this.volumeBeforeMute || 0.5
+        
         this.volumeLevelBar.style.width = this.systemPlayer.volume * 100 + '%'
         this.icon.src = unmutedIcon
     }
@@ -62,12 +72,12 @@ export default class Volume {
 
 
     startChange(e) {
-        this.setVolume(e)
+        this.changeVolume(e)
         document.addEventListener('mousemove', this._changeMethod)
         document.addEventListener('mouseup', this.stopChange.bind(this), {once: true})
     }
 
-    setVolume(e) {
+    changeVolume(e) {
         const shiftX = e.clientX - this.bar.getBoundingClientRect().left
         shiftX < 0 ? this.mute() : this.unmute()
 
