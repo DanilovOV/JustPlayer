@@ -11,6 +11,7 @@ import ProgressBar from "../controls/ProgressBar/ProgressBar"
 
 import startPlaySongIcon from "./list-play.png"
 import activeSongIcon from "./now-playing.png"
+import MoveSongs from "../MoveSongs"
 
 
 
@@ -51,6 +52,8 @@ export default class Audioplayer {
 
         this.volume = new Volume(this.systemPlayer)
         this.repeat = new Repeat(document.querySelector('.js-repeat-button'))
+
+        this.moveSong = new MoveSongs(this.songList)
     }
 
     initSongs() {
@@ -70,8 +73,10 @@ export default class Audioplayer {
             )
         })
         
-        this.songList.querySelectorAll('.js-song-item').forEach(item =>
-            item.addEventListener('click', () => this.songClick.call(this, item)))
+        this.songList.querySelectorAll('.js-song-item').forEach(item => {
+            item.addEventListener('click', () => this.songClick.call(this, item))
+            item.addEventListener('mousedown', this.moveSong.start.bind(this.moveSong))
+        })
 
         this.makeSongActive(document.querySelector('.js-song-item'))
     }
@@ -91,9 +96,8 @@ export default class Audioplayer {
 
 
     switch(whichSong, songElem) {
-        // if (MoveSong.isSongMoved) return
-        
         this.order = PlayerStorage.order
+
         if (songElem && !songElem.dataset.songId)
             throw new Error("Song elem don't have data-id attr")
 

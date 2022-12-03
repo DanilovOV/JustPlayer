@@ -15,8 +15,8 @@ export default class PlayerStorage {
         }
     }
 
-    static getAndUploadNewOrder(songsList) {
-        let newOrder = songsList.map(song => song.dataset.songId)
+    static setAndUploadNewOrder(songsList) {
+        let newOrder = [...songsList].map(song => song.dataset.songId)
         
         this.uploadSongsOrder(newOrder)
         return newOrder
