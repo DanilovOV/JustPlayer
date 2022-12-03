@@ -16,10 +16,8 @@ export default class Audioplayer {
         
         this.findElements()
         this.createControls()
-        this.renderSongs()
+        this.initSongs()
         this.addListeners()
-        
-        this.makeSongActive(document.querySelector('.js-song-item'))
     }
     
     findElements() {
@@ -43,7 +41,7 @@ export default class Audioplayer {
         this.prevButton.button.addEventListener('click', () => this.switch.call(this, 'prev', this.activeSong))
     }
 
-    renderSongs() {
+    initSongs() {
         PlayerStorage.order.forEach(num => {
             this.songList.insertAdjacentHTML('beforeend', 
                 `<div class="audioplayer__songItem js-song-item" data-song-id="${num}"> \
@@ -59,6 +57,11 @@ export default class Audioplayer {
                 </div>`
             )
         })
+        
+        this.songList.querySelectorAll('.js-song-item').forEach(
+            item => item.addEventListener('click', () => this.switch('this', item)))
+
+        this.makeSongActive(document.querySelector('.js-song-item'))
     }
 
     addListeners() {
