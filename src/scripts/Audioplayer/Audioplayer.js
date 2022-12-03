@@ -4,13 +4,11 @@ import PlayerStorage from "../PlayerStorage"
 import PlayPause from "../controls/PlayPause/PlayPause"
 import Next from "../controls/Next/Next"
 import Prev from "../controls/Prev/Prev"
+import Volume from "../controls/Volume/Volume"
+import Repeat from "../controls/Repeat/Repeat"
 
 import startPlaySongIcon from "./list-play.png"
 import activeSongIcon from "./now-playing.png"
-
-import Volume from "../controls/Volume/Volume"
-
-
 
 
 
@@ -47,6 +45,7 @@ export default class Audioplayer {
         this.prevButton.button.addEventListener('click', () => this.switch.call(this, 'prev', this.activeSong))
 
         this.volume = new Volume(this.systemPlayer)
+        this.repeat = new Repeat(document.querySelector('.js-repeat-button'))
     }
 
     initSongs() {
@@ -172,5 +171,10 @@ export default class Audioplayer {
         song.classList.contains('active-song')
             ? this.playPause.playPauseHandler()
             : this.switch('this', song)
+    }
+
+    songEndedHandler() {
+        this.repeat.isRepeat || this.switch('next', this.activeSong)
+        systemPlayer.play()
     }
 }
