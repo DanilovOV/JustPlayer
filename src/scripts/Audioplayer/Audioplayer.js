@@ -17,9 +17,10 @@ import MoveSongs from "../MoveSongs"
 
 export default class Audioplayer {
 
-    constructor(systemPlayer) {
-        if (!systemPlayer) throw new Error('Constructor require system player HTML elem')
-        this.systemPlayer = systemPlayer
+    constructor(wrapper) {
+        this.wrapper = wrapper
+        this.systemPlayer = this.wrapper.querySelector('audio')
+        if (!this.systemPlayer) throw new Error('Audioplayer wrapper must contain audio tag')
         
         this.findElements()
         this.createControls()
@@ -30,14 +31,14 @@ export default class Audioplayer {
     }
     
     findElements() {
-        this.songList = document.querySelector('.js-songs-list')
-        this.bigCover = document.querySelector('.js-big-cover')
-        this.songDuration = document.querySelector('.js-song-duration')
-        this.currentPlayTime = document.querySelector('.js-play-time')
-        this.currentVolume = document.querySelector('.js-current-volume')
-        this.songNameElem = document.querySelector('.js-song-name')
-        this.authorElem = document.querySelector('.js-song-author')
-        this.albumElem = document.querySelector('.js-song-album')
+        this.songList = this.wrapper.querySelector('.js-songs-list')
+        this.bigCover = this.wrapper.querySelector('.js-big-cover')
+        this.songDuration = this.wrapper.querySelector('.js-song-duration')
+        this.currentPlayTime = this.wrapper.querySelector('.js-play-time')
+        this.currentVolume = this.wrapper.querySelector('.js-current-volume')
+        this.songNameElem = this.wrapper.querySelector('.js-song-name')
+        this.authorElem = this.wrapper.querySelector('.js-song-author')
+        this.albumElem = this.wrapper.querySelector('.js-song-album')
     }
 
     createControls() {
@@ -51,7 +52,7 @@ export default class Audioplayer {
         this.prevButton.button.addEventListener('click', () => this.switch.call(this, 'prev', this.activeSong))
 
         this.volume = new Volume(this.systemPlayer)
-        this.repeat = new Repeat(document.querySelector('.js-repeat-button'))
+        this.repeat = new Repeat(this.wrapper.querySelector('.js-repeat-button'))
 
         this.moveSong = new MoveSongs(this.songList)
     }
@@ -78,7 +79,7 @@ export default class Audioplayer {
             item.addEventListener('mousedown', this.moveSong.start.bind(this.moveSong))
         })
 
-        this.makeSongActive(document.querySelector('.js-song-item'))
+        this.makeSongActive(this.wrapper.querySelector('.js-song-item'))
     }
 
     addPlayerListeners() {
@@ -106,9 +107,9 @@ export default class Audioplayer {
         if (whichSong == 'this') 
             this.startNewSong( songElem )
         if (whichSong == 'prev') 
-            this.startNewSong( document.querySelector(`[data-song-id="${this.getPrevOrderIndex(songId)}"]`) )
+            this.startNewSong( this.wrapper.querySelector(`[data-song-id="${this.getPrevOrderIndex(songId)}"]`) )
         if (whichSong == 'next') 
-            this.startNewSong( document.querySelector(`[data-song-id="${this.getNextOrderIndex(songId)}"]`) )
+            this.startNewSong( this.wrapper.querySelector(`[data-song-id="${this.getNextOrderIndex(songId)}"]`) )
     }
 
     getOrderIndex(songElem) {
