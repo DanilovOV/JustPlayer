@@ -66,8 +66,8 @@ export default class Audioplayer {
             )
         })
         
-        this.songList.querySelectorAll('.js-song-item').forEach(
-            item => item.addEventListener('click', () => this.switch('this', item)))
+        this.songList.querySelectorAll('.js-song-item').forEach(item =>
+            item.addEventListener('click', () => this.songClick.call(this, item)))
 
         this.makeSongActive(document.querySelector('.js-song-item'))
     }
@@ -166,5 +166,11 @@ export default class Audioplayer {
 
         songElem.classList.add('active-song')
         songElem.querySelector('img').src = activeSongIcon
+    }
+
+    songClick(song) {
+        song.classList.contains('active-song')
+            ? this.playPause.playPauseHandler()
+            : this.switch('this', song)
     }
 }
