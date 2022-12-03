@@ -17,7 +17,7 @@ export default class Audioplayer {
         this.findElements()
         this.createControls()
         this.initSongs()
-        this.addListeners()
+        this.addPlayerListeners()
     }
     
     findElements() {
@@ -64,11 +64,16 @@ export default class Audioplayer {
         this.makeSongActive(document.querySelector('.js-song-item'))
     }
 
-    addListeners() {
+    addPlayerListeners() {
         this.systemPlayer.addEventListener('play', () => this.playPause.startPlaying())
         this.systemPlayer.addEventListener('pause', () => this.playPause.stopPlaying())
         this.systemPlayer.addEventListener('ended', this.temp)
         this.systemPlayer.addEventListener('timeupdate', this.temp)
+        
+        navigator.mediaSession.setActionHandler('previoustrack', () => this.switch.call(this, 'prev', this.activeSong))
+        navigator.mediaSession.setActionHandler('nexttrack', () => this.switch.call(this, 'next', this.activeSong))
+        navigator.mediaSession.setActionHandler('play', () => this.playPause.startPlaying());
+        navigator.mediaSession.setActionHandler('pause', () => this.playPause.stopPlaying());
     }
 
     temp() {
